@@ -5,7 +5,8 @@ import { useAuth } from '../../contexts/AuthContext'
 const GuestLayout = () => {
   const { user } = useAuth()
 
-  if (!user) {
+  // Use a flag to determine if redirection should occur
+  if (user) {
     return <Navigate to="/admin/dashboard" />
   }
 

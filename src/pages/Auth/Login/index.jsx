@@ -1,3 +1,5 @@
+import React from 'react'
+
 import LogoLidercell from '../../../components/common/LogoLidercell'
 import LoginForm from '../../../components/Form/LoginForm'
 
