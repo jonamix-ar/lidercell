@@ -1,0 +1,13 @@
+/* index.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-normal text-base text-slate-400 bg-[#F1F5F9] relative z-1;
+  }
+}
+
+@layer components {
+}
