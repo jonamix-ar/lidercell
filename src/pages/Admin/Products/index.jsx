@@ -139,9 +139,9 @@ const Products = () => {
           >
             <FiEdit />
           </Link>
-          <Link className="inline-flex items-center justify-center gap-2 p-2 rounded-md bg-red-500 text-sm text-center font-medium text-white hover:bg-opacity-90 ">
+          <button className="inline-flex items-center justify-center gap-2 p-2 rounded-md bg-red-500 text-sm text-center font-medium text-white hover:bg-opacity-90" >
             <FiTrash />
-          </Link>
+          </button>
         </div>
       ),
       size: 5
