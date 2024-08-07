@@ -53,7 +53,7 @@ const Brands = () => {
 
   const handleDeleteClick = (id) => {
     if (
-      window.confirm('¿Estás seguro de que deseas eliminar esta categoría?')
+      window.confirm('¿Estás seguro de que deseas eliminar esta marca?')
     ) {
       handleDelete(id)
     }

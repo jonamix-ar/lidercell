@@ -2,22 +2,23 @@ import React, { useEffect, useState } from 'react'
 import GeneralCard from '@app/components/Cards/GeneralCard'
 import TableData from '@app/components/Tables/TableData'
 import Badge from '@app/components/UI/Badge'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { FiEdit, FiPlus, FiTrash } from 'react-icons/fi'
 import { FaFileExport, FaFileImport } from 'react-icons/fa6'
-import axios from '@app/libs/axios'
 import { money } from '@app/utils/money'
 import { getDolar } from '@app/services/dolar'
+import { getProducts, deleteProduct } from '@app/services/products'
+import { toast } from 'react-toastify'
 
 const Products = () => {
   const [products, setProducts] = useState([])
   const [dolar, setDolar] = useState({})
-
+  const navigate = useNavigate()
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('/products')
-        setProducts(response.data.products)
+        const data = await getProducts()
+        setProducts(data.products)
 
         const dolar = await getDolar()
         setDolar(dolar)
@@ -28,6 +29,43 @@ const Products = () => {
 
     fetchProducts()
   }, [])
+
+  const handleDelete = async (id) => {
+    try {
+      const resp = await deleteProduct(id)
+      console.log('🚀 ~ handleDelete ~ resp:', resp)
+      if (resp.status === 200) {
+        setProducts((prevProducts) =>
+          prevProducts.filter((product) => product.id !== id)
+        )
+
+        toast.success('Producto eliminado exitosamente', {
+          position: 'bottom-right',
+          autoClose: 5000
+        })
+        navigate('/admin/products')
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        console.error(error.response.data.message)
+        toast.error('No autorizado. Inicie sesión nuevamente.', {
+          position: 'bottom-right',
+          autoClose: 5000
+        })
+      } else {
+        toast.error('Error al eliminar el producto.', {
+          position: 'bottom-right',
+          autoClose: 5000
+        })
+      }
+    }
+  }
+
+  const handleDeleteClick = (id) => {
+    if (window.confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+      handleDelete(id)
+    }
+  }
 
   const columns = [
     {
@@ -139,7 +177,10 @@ const Products = () => {
           >
             <FiEdit />
           </Link>
-          <button className="inline-flex items-center justify-center gap-2 p-2 rounded-md bg-red-500 text-sm text-center font-medium text-white hover:bg-opacity-90" >
+          <button
+            onClick={() => handleDeleteClick(info.row.original.id)}
+            className="inline-flex items-center justify-center gap-2 p-2 rounded-md bg-red-500 text-sm text-center font-medium text-white hover:bg-opacity-90 "
+          >
             <FiTrash />
           </button>
         </div>

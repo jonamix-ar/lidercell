@@ -17,7 +17,7 @@ const Login = () => {
             <div className="mb-4">
               <LogoLidercell
                 color={'#fff'}
-                colorSecondary={'#000'}
+                colorSecondary={'transparent'}
                 stroke={'#fff'}
                 className={'w-full h-full'}
               />
