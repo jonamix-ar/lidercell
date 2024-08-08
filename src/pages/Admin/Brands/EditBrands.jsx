@@ -7,7 +7,7 @@ import GeneralCard from '@app/components/Cards/GeneralCard'
 import Loading from '@app/components/common/Loading'
 import { toast } from 'react-toastify'
 import { FiArrowLeft, FiSave } from 'react-icons/fi'
-import { updateBrand, getBrandById } from '@app/services/brands'
+import { updateBrand, getBrandById } from '@app/services/Brands'
 
 const EditBrands = () => {
   const { id } = useParams()

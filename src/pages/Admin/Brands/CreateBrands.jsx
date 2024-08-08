@@ -5,7 +5,7 @@ import 'dropzone/dist/dropzone.css'
 import { toast } from 'react-toastify'
 import { Link, useNavigate } from 'react-router-dom'
 import { FiArrowLeft, FiSave } from 'react-icons/fi'
-import { createBrand } from '@app/services/brands'
+import { createBrand } from '@app/services/Brands'
 
 const CreateBrands = () => {
   const [brands, setBrands] = useState({

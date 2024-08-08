@@ -6,7 +6,7 @@ import GeneralCard from '@app/components/Cards/GeneralCard'
 import TableData from '@app/components/Tables/TableData'
 import Badge from '@app/components/UI/Badge'
 import { toast } from 'react-toastify'
-import { deleteBrand } from '@app/services/brands'
+import { deleteBrand } from '@app/services/Brands'
 
 const Brands = () => {
   const [brands, setBrands] = useState([])

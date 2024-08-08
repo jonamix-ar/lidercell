@@ -5,7 +5,7 @@ import 'dropzone/dist/dropzone.css' // Ensure Dropzone CSS is imported
 import GeneralCard from '@app/components/Cards/GeneralCard'
 import { getProductById, updateProduct } from '@app/services/products'
 import { getCategories } from '@app/services/categories'
-import { getBrands } from '@app/services/brands'
+import { getBrands } from '@app/services/Brands'
 import { FiArrowLeft, FiSave } from 'react-icons/fi'
 import { toast } from 'react-toastify'
 
