@@ -7,6 +7,7 @@ import GeneralCard from '@app/components/Cards/GeneralCard'
 import Loading from '@app/components/common/Loading'
 import { toast } from 'react-toastify'
 import { FiArrowLeft, FiSave } from 'react-icons/fi'
+import { updateBrand, getBrandById } from '@app/services/brands'
 
 const EditBrands = () => {
   const { id } = useParams()
@@ -20,7 +21,7 @@ const EditBrands = () => {
   useEffect(() => {
     const fetchBrand = async () => {
       try {
-        const response = await axios.get(`/brands/${id}/edit`)
+        const response = await getBrandById(id)
         if (response.status === 200) {
           setBrand(response.data.brand)
           setEnabled(response.data.brand.status === 1)
@@ -70,10 +71,7 @@ const EditBrands = () => {
   const handleUpdate = async (e) => {
     e.preventDefault()
     try {
-      await axios.put(`/brands/${id}/update`, {
-        ...brand,
-        status: enabled ? 1 : 0
-      })
+      await updateBrand(id, brand, enabled)
       toast.success('Marca actualizada correctamente', {
         position: 'bottom-right',
         autoClose: 5000

@@ -39,3 +39,21 @@ export const deleteProduct = async (id) => {
     throw error // Rethrow the error to be handled in the calling function
   }
 }
+
+export const getProductsSearch = async () => {
+  try {
+    const response = await api.get('/products') // Adjust the API endpoint as needed
+    console.log('API response:', response) // Log the entire response
+
+    // Check if the response contains data and if it's an array
+    if (response.data && Array.isArray(response.data.products)) {
+      return response.data.products
+    } else {
+      console.error('Unexpected response format:', response.data)
+      return []
+    }
+  } catch (error) {
+    console.error('Error fetching products:', error)
+    throw error
+  }
+}

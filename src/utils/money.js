@@ -10,3 +10,16 @@ export const money = (value) => {
     currency: 'USD'
   }).format(money)
 }
+
+export const moneyArs = (value) => {
+  const money = Number(value)
+
+  if (isNaN(money)) {
+    return value
+  }
+
+  return new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'ARS'
+  }).format(money)
+}

@@ -5,7 +5,7 @@ import 'dropzone/dist/dropzone.css'
 import { toast } from 'react-toastify'
 import { Link, useNavigate } from 'react-router-dom'
 import { FiArrowLeft, FiSave } from 'react-icons/fi'
-import axios from '@app/libs/axios'
+import { createBrand } from '@app/services/brands'
 
 const CreateBrands = () => {
   const [brands, setBrands] = useState({
@@ -61,14 +61,12 @@ const CreateBrands = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      const response = await axios.post('/brands', brands)
-      if (response.status === 201) {
-        toast.success('Marca creada exitosamente', {
-          position: 'bottom-right',
-          autoClose: 5000
-        })
-        navigate('/admin/brands')
-      }
+      await createBrand(brands)
+      toast.success('Marca creada exitosamente', {
+        position: 'bottom-right',
+        autoClose: 5000
+      })
+      navigate('/admin/brands')
     } catch (error) {
       toast.error(
         `Error al crear la marca: ${error.response?.data?.message || 'Error desconocido'}`,

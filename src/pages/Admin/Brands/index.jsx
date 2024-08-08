@@ -6,6 +6,7 @@ import GeneralCard from '@app/components/Cards/GeneralCard'
 import TableData from '@app/components/Tables/TableData'
 import Badge from '@app/components/UI/Badge'
 import { toast } from 'react-toastify'
+import { deleteBrand } from '@app/services/brands'
 
 const Brands = () => {
   const [brands, setBrands] = useState([])
@@ -27,7 +28,7 @@ const Brands = () => {
 
   const handleDelete = async (id) => {
     try {
-      const resp = await axios.delete(`/brands/${id}/delete`)
+      const resp = await deleteBrand(id)
       if (resp.status === 200) {
         setBrands(brands.filter((brand) => brand.id !== id))
         toast.success('Marca eliminada exitosamente', {
@@ -52,9 +53,7 @@ const Brands = () => {
   }
 
   const handleDeleteClick = (id) => {
-    if (
-      window.confirm('¿Estás seguro de que deseas eliminar esta marca?')
-    ) {
+    if (window.confirm('¿Estás seguro de que deseas eliminar esta marca?')) {
       handleDelete(id)
     }
   }

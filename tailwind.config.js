@@ -14,7 +14,7 @@ export default {
       },
       colors: {
         white: '#FFFFFF',
-        black: '#1C2434',
+        black: '#353c48',
         stroke: '#E2E8F0'
       },
       fontSize: {

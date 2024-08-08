@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { Navigate, Outlet } from 'react-router-dom'
-import axios from '../../libs/axios'
 import { useAuth } from '../../contexts/AuthContext'
 import Navigation from '../Partials/Navigation'
 import Sidebar from '../Partials/Sidebar'
