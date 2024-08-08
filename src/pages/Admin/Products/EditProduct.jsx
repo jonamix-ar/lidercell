@@ -27,8 +27,8 @@ const EditProduct = () => {
       try {
         const data = await getProductById(id)
         setProduct(data.product)
-        setShowPrice(data.product.show_price === 1)
-        setShowPriceWholesaler(data.product.show_price_wholesaler === 1)
+        setShowPrice(data.product.show_price == 1)
+        setShowPriceWholesaler(data.product.show_price_wholesaler == 1)
         const categories = await getCategories()
         setCategories(categories.data)
         const dataBrands = await getBrands()
