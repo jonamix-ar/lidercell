@@ -9,6 +9,27 @@ export const getProducts = async () => {
   }
 }
 
+export const getProductsWithPagination = async ({
+  currentPage,
+  itemsPerPage
+}) => {
+  try {
+    const response = await api.get(
+      `/products?page=${currentPage}&limit=${itemsPerPage}`
+    )
+
+    return {
+      products: response.data.products, // assuming your API returns a products array
+      totalItems: response.data.totalItems, // assuming your API returns the total number of items
+      totalPages: response.data.totalPages, // assuming your API returns the total number of pages
+      currentPage: response.data.currentPage || currentPage // handle current page
+    }
+  } catch (error) {
+    console.error('Error al obtener los productos con paginación:', error)
+    return null
+  }
+}
+
 export const getProductById = async (id) => {
   try {
     const { data } = await api.get(`/products/${id}`)
