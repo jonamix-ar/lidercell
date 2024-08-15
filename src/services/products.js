@@ -2,8 +2,8 @@ import api from '@app/libs/api'
 
 export const getProducts = async () => {
   try {
-    const { data } = await api.get('/products')
-    return data
+    const response = await api.get('/products')
+    return response
   } catch (error) {
     console.error('Error al obtener los datos de configuración:', error)
   }
@@ -18,11 +18,21 @@ export const getProductById = async (id) => {
   }
 }
 
+export const createProduct = async (product) => {
+  try {
+    const response = await api.post('/products', product)
+    return response
+  } catch (error) {
+    console.error('Error al crear el producto:', error)
+    throw error // Re-throw the error to be caught in handleCreate
+  }
+}
+
 export const updateProduct = async (id, product) => {
   try {
     // Make sure to send the product object to the backend
-    const { data } = await api.put(`/products/${id}/update`, product)
-    return data
+    const response = await api.put(`/products/${id}`, product)
+    return response
   } catch (error) {
     console.error('Error al actualizar el producto:', error)
     throw error // Re-throw the error to be caught in handleUpdate

@@ -3,7 +3,7 @@ import { FaGoogle } from 'react-icons/fa'
 import { useAuth } from '../../contexts/AuthContext'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import axios from '../../libs/axios'
+import api from '@app/libs/api'
 
 const LoginForm = () => {
   const [email, setEmail] = useState('')
@@ -18,12 +18,13 @@ const LoginForm = () => {
       email: email.value,
       password: password.value
     }
-    await csrfToken()
 
     try {
-      const resp = await axios.post('/login', body)
+      // No necesitas csrfToken si no usas Laravel Sanctum
+      const resp = await api.post('/auth/login', body) // Asegúrate de usar la ruta correcta
       if (resp.status === 200) {
-        setUser(resp.data.user)
+        // Guarda el token junto con el usuario
+        setUser(resp.data.user, resp.data.token)
         navigate('/admin/dashboard')
       }
     } catch (error) {
@@ -44,9 +45,13 @@ const LoginForm = () => {
   return (
     <>
       <form onSubmit={handleSubmit} className="w-full">
-        <div className="header-text mb-4">
-          <h2 className="font-bold text-2xl">HOLA, OTRA VEZ 👋</h2>
-          <p>Estamos felices de tenerte de regreso.</p>
+        <div className="mb-4">
+          <h2 className="text-slate-800 font-bold text-2xl">
+            HOLA, OTRA VEZ 👋
+          </h2>
+          <p className="text-slate-600">
+            Estamos felices de tenerte de regreso.
+          </p>
         </div>
         <div className="mb-3">
           <input
@@ -55,7 +60,7 @@ const LoginForm = () => {
             id="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-3 border rounded-lg"
+            className="w-full p-3 border rounded-lg  text-slate-500"
             placeholder="Correo electrónico"
             aria-label="Correo electrónico"
             required
@@ -70,7 +75,7 @@ const LoginForm = () => {
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-3 border rounded-lg"
+            className="w-full p-3 border rounded-lg text-slate-500"
             placeholder="Contraseña"
             aria-label="Password"
             required
@@ -85,7 +90,7 @@ const LoginForm = () => {
               name="remember"
               className="form-check-input"
             />
-            <label className="ml-2" htmlFor="rememberMe">
+            <label className="ml-2 text-slate-600" htmlFor="rememberMe">
               Recuérdame
             </label>
           </div>
@@ -99,7 +104,7 @@ const LoginForm = () => {
           </button>
         </div>
         <div className="mb-3">
-          <button className="w-full p-3 bg-gray-100 hover:bg-gray-50 text-lg rounded-lg flex items-center justify-center">
+          <button className="w-full p-3 text-slate-800 bg-gray-100 hover:bg-gray-50 text-lg rounded-lg flex items-center justify-center">
             <FaGoogle className="mr-2" /> Inicia sesión con Google
           </button>
         </div>

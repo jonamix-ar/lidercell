@@ -1,66 +1,45 @@
-import React, { useEffect, useRef, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
-import Dropzone from 'dropzone'
-import 'dropzone/dist/dropzone.css' // Ensure Dropzone CSS is imported
+import React, { useEffect, useState, useRef } from 'react'
 import GeneralCard from '@app/components/Cards/GeneralCard'
-import { getProductById, updateProduct } from '@app/services/products'
 import { getCategories } from '@app/services/categories'
 import { getBrands } from '@app/services/brands'
-import { FiArrowLeft, FiSave } from 'react-icons/fi'
+import { FiArrowLeft, FiSave, FiUpload } from 'react-icons/fi'
+import { Link, useNavigate } from 'react-router-dom'
+import { Dropzone } from 'dropzone'
+import 'dropzone/dist/dropzone.css' // Ensure Dropzone CSS is imported
+import { createProduct } from '@app/services/products'
 import { toast } from 'react-toastify'
 
-const EditProduct = () => {
-  const { id } = useParams()
+const CreateProduct = () => {
   const navigate = useNavigate()
-  const [product, setProduct] = useState({})
   const [categories, setCategories] = useState([])
   const [brands, setBrands] = useState([])
-  const dropzoneRef = useRef(null)
   const [showPrice, setShowPrice] = useState(false)
   const [showPriceWholesaler, setShowPriceWholesaler] = useState(false)
-  const imgSrcPlaceholder = 'https://placehold.co/600x400'
+  const dropzoneRef = useRef(null)
+  const [formData, setFormData] = useState({
+    name: '',
+    category_id: '',
+    brand_id: '',
+    pre_owned: 0,
+    description: '',
+    color: '',
+    storage: '',
+    sku: '',
+    price: 0.0,
+    priceWholesaler: 0.0,
+    showPrice: 0,
+    showPriceWholesaler: 0,
+    qty: 0,
+    status: true
+  })
 
   useEffect(() => {
-    let myDropzone = null
-
     const fetchData = async () => {
       try {
-        const data = await getProductById(id)
-        console.log('🚀 ~ fetchData ~ data:', data)
-        setProduct(data.product)
-        setShowPrice(data.product.show_price == true)
-        setShowPriceWholesaler(data.product.show_price_wholesaler == true)
-        const categoriesResp = await getCategories()
-        setCategories(categoriesResp.data.categories)
-        const dataBrands = await getBrands()
-        setBrands(dataBrands.brands)
-
-        if (dropzoneRef.current && !myDropzone) {
-          myDropzone = new Dropzone(dropzoneRef.current, {
-            url: `${import.meta.env.VITE_REACT_APP_BACKEND}/upload`,
-            paramName: 'file', // The name that will be used to transfer the file
-            maxFilesize: 2, // MB
-            acceptedFiles: 'image/*',
-            addRemoveLinks: true,
-            dictDefaultMessage:
-              'Arrastra y suelta archivos aquí o haz clic para subir.',
-            init: function () {
-              this.on('success', function (file, response) {
-                if (response && response.filePath) {
-                  setProduct((prevState) => ({
-                    ...prevState,
-                    picture: response.filePath
-                  }))
-                } else {
-                  toast.error('Error al obtener la ruta del archivo subido.', {
-                    position: 'bottom-right',
-                    autoClose: 5000
-                  })
-                }
-              })
-            }
-          })
-        }
+        const categoriesResponse = await getCategories()
+        const brandsResponse = await getBrands()
+        setCategories(categoriesResponse.data.categories)
+        setBrands(brandsResponse.brands)
       } catch (error) {
         if (error.response && error.response.status === 401) {
           console.log(error.response.data.message)
@@ -69,57 +48,96 @@ const EditProduct = () => {
     }
 
     fetchData()
+  }, [])
 
-    return () => {
-      if (myDropzone) {
+  useEffect(() => {
+    if (dropzoneRef.current) {
+      const myDropzone = new Dropzone(dropzoneRef.current, {
+        url: `${import.meta.env.VITE_REACT_APP_BACKEND}/upload`,
+        paramName: 'file', // The name that will be used to transfer the file
+        maxFilesize: 2, // MB
+        acceptedFiles: 'image/*',
+        addRemoveLinks: true,
+        dictDefaultMessage:
+          'Arrastra y suelta archivos aquí o haz clic para subir.',
+        init: function () {
+          this.on('success', function (file, response) {
+            // Assuming response contains the file path
+            if (response && response.filePath) {
+              setFormData((prevState) => ({
+                ...prevState,
+                picture: response.filePath
+              }))
+            } else {
+              toast.error('Error al obtener la ruta del archivo subido.', {
+                position: 'bottom-right',
+                autoClose: 5000
+              })
+            }
+          })
+        }
+      })
+
+      return () => {
         myDropzone.destroy()
       }
     }
-  }, [id]) // Depend on `id` or any other dependencies if needed
+  }, [dropzoneRef])
 
-  const handleToggleShowPrice = () => setShowPrice((prev) => !prev)
-  const handleToggleShowPriceWholesaler = () =>
-    setShowPriceWholesaler((prev) => !prev)
+  const handleInputChange = (e) => {
+    const { name, value } = e.target
+    setFormData({
+      ...formData,
+      [name]: value
+    })
+  }
 
-  const handleUpdate = async (e) => {
+  const handleSelectChange = (e) => {
+    const { name, value } = e.target
+    setFormData({
+      ...formData,
+      [name]: value
+    })
+  }
+
+  const handleToogleShowPrice = () => {
+    setShowPrice((prevState) => !prevState)
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      showPrice: !showPrice ? '1' : '0' // '1' para activado, '0' para desactivado
+    }))
+  }
+
+  const handleToogleShowPriceWholesaler = () => {
+    setShowPriceWholesaler((prevState) => !prevState)
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      showPriceWholesaler: !showPriceWholesaler ? '1' : '0' // '1' para activado, '0' para desactivado
+    }))
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
     try {
-      console.log('Datos del producto antes de actualizar:', product)
-      const id = product.id
-
-      const updatedProduct = {
-        ...product,
-        show_price: showPrice ? true : false,
-        show_price_wholesaler: showPriceWholesaler ? true : false
-      }
-      await updateProduct(id, updatedProduct)
-
-      toast.success('Producto actualizado correctamente', {
+      console.log('Product created:', formData)
+      // Aquí puedes realizar la petición a tu API para guardar el producto
+      await createProduct(formData)
+      // Redirigir al usuario a una nueva ruta o mostrar un mensaje de exito
+      toast.success('Producto creado correctamente', {
         position: 'bottom-right',
         autoClose: 5000
       })
       navigate('/admin/products')
     } catch (error) {
-      console.error('Error al actualizar el producto:', error)
-
-      toast.error(
-        'Error al actualizar el producto. Por favor, intenta de nuevo.',
-        {
-          position: 'bottom-right',
-          autoClose: 5000
-        }
-      )
+      console.error('Error creating product:', error)
     }
   }
 
   return (
-    <form onSubmit={handleUpdate}>
+    <form onSubmit={handleSubmit}>
       <div className="flex flex-row gap-5.5 p-3">
         <div className="w-3/4">
-          <GeneralCard
-            title={`Editar Producto: ${product.name}`}
-            className="p-4"
-          >
+          <GeneralCard title="Crear nuevo producto" className="p-4">
             <div className="flex flex-col gap-5.5">
               <div className="w-full">
                 <label
@@ -134,10 +152,8 @@ const EditProduct = () => {
                   name="name"
                   className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                   placeholder="Escriba el nombre del producto"
-                  value={product.name || ''}
-                  onChange={(e) =>
-                    setProduct({ ...product, name: e.target.value })
-                  }
+                  value={formData.name}
+                  onChange={handleInputChange}
                   required
                 />
               </div>
@@ -152,12 +168,12 @@ const EditProduct = () => {
                   </label>
                   <select
                     id="category"
+                    name="category_id"
                     className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                    value={product.category_id || ''}
-                    onChange={(e) =>
-                      setProduct({ ...product, category_id: e.target.value })
-                    }
+                    value={formData.category_id}
+                    onChange={handleSelectChange}
                   >
+                    <option value="">Seleccione una categoría</option>
                     {categories.map((category) => (
                       <option key={category.id} value={category.id}>
                         {category.name}
@@ -175,12 +191,12 @@ const EditProduct = () => {
                   </label>
                   <select
                     id="brand"
+                    name="brand_id"
                     className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                    value={product.brand_id || ''}
-                    onChange={(e) =>
-                      setProduct({ ...product, brand_id: e.target.value })
-                    }
+                    value={formData.brand_id}
+                    onChange={handleSelectChange}
                   >
+                    <option value="">Seleccione una marca</option>
                     {brands.map((brand) => (
                       <option key={brand.id} value={brand.id}>
                         {brand.name}
@@ -191,19 +207,19 @@ const EditProduct = () => {
 
                 <div className="w-full md:w-1/4">
                   <label
-                    htmlFor="pre_owned"
+                    htmlFor="status"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
                     Estado del producto?
                   </label>
                   <select
-                    id="pre_owned"
+                    id="status"
+                    name="pre_owned"
                     className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                    value={product.pre_owned || 0}
-                    onChange={(e) =>
-                      setProduct({ ...product, pre_owned: e.target.value })
-                    }
+                    value={formData.pre_owned}
+                    onChange={handleSelectChange}
                   >
+                    <option value="">Seleccione un estado</option>
                     {[
                       { id: 0, name: 'Nuevo' },
                       { id: 1, name: 'Seminuevo' },
@@ -219,16 +235,18 @@ const EditProduct = () => {
 
               <div className="flex flex-col md:flex-row gap-5.5 w-full">
                 <div className="w-full">
-                  <label className="mb-3 block text-sm font-medium text-black dark:text-white">
+                  <label
+                    htmlFor="description"
+                    className="mb-3 block text-sm font-medium text-black dark:text-white"
+                  >
                     Descripción
                   </label>
                   <textarea
                     id="description"
-                    value={product.description || ''}
-                    onChange={(e) =>
-                      setProduct({ ...product, description: e.target.value })
-                    }
+                    name="description"
                     className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-4 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
+                    value={formData.description}
+                    onChange={handleInputChange}
                   ></textarea>
                 </div>
               </div>
@@ -236,7 +254,7 @@ const EditProduct = () => {
               <div className="flex flex-col md:flex-row gap-5.5 w-full">
                 <div className="w-1/2">
                   <label
-                    htmlFor="name"
+                    htmlFor="color"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
                     Color
@@ -244,13 +262,11 @@ const EditProduct = () => {
                   <input
                     type="text"
                     id="color"
+                    name="color"
                     className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
                     placeholder="Escriba el nombre del producto"
-                    value={product.color || ''}
-                    onChange={(e) =>
-                      setProduct({ ...product, color: e.target.value })
-                    }
-                    required
+                    value={formData.color}
+                    onChange={handleInputChange}
                   />
                 </div>
                 <div className="w-1/2">
@@ -263,12 +279,11 @@ const EditProduct = () => {
                   <input
                     type="text"
                     id="storage"
+                    name="storage"
                     className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                    placeholder="Escriba el nombre del producto"
-                    value={product.storage || ''}
-                    onChange={(e) =>
-                      setProduct({ ...product, storage: e.target.value })
-                    }
+                    placeholder="Escriba la capacidad de almacenamiento"
+                    value={formData.storage}
+                    onChange={handleInputChange}
                   />
                 </div>
               </div>
@@ -276,7 +291,7 @@ const EditProduct = () => {
               <div className="flex flex-col md:flex-row gap-5.5 w-full">
                 <div className="w-1/4">
                   <label
-                    htmlFor="name"
+                    htmlFor="sku"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
                     SKU/Cod. Barras
@@ -284,18 +299,17 @@ const EditProduct = () => {
                   <input
                     type="text"
                     id="sku"
+                    name="sku"
                     className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                    placeholder="Escriba el nombre del producto"
-                    value={product.sku || ''}
-                    onChange={(e) =>
-                      setProduct({ ...product, sku: e.target.value })
-                    }
+                    placeholder="Escriba el SKU o código de barras"
+                    value={formData.sku}
+                    onChange={handleInputChange}
                   />
                 </div>
 
                 <div className="w-1/4">
                   <label
-                    htmlFor="name"
+                    htmlFor="price"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
                     Precio USD
@@ -303,38 +317,33 @@ const EditProduct = () => {
                   <input
                     type="number"
                     id="price"
+                    name="price"
                     min={0.0}
                     step={0.01}
                     className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                    placeholder="Escriba el nombre del producto"
-                    value={product.price || ''}
-                    onChange={(e) =>
-                      setProduct({ ...product, price: e.target.value })
-                    }
+                    placeholder="Escriba el precio en USD"
+                    value={formData.price}
+                    onChange={handleInputChange}
                   />
                 </div>
 
                 <div className="w-1/4">
                   <label
-                    htmlFor="name"
+                    htmlFor="priceWholesaler"
                     className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
                   >
                     Precio USD Mayorista
                   </label>
                   <input
                     type="number"
-                    id="price"
+                    id="priceWholesaler"
+                    name="priceWholesaler"
                     min={0.0}
                     step={0.01}
                     className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                    placeholder="Escriba el nombre del producto"
-                    value={product.price_wholesaler || ''}
-                    onChange={(e) =>
-                      setProduct({
-                        ...product,
-                        price_wholesaler: e.target.value
-                      })
-                    }
+                    placeholder="Escriba el precio mayorista en USD"
+                    value={formData.priceWholesaler}
+                    onChange={handleInputChange}
                   />
                 </div>
 
@@ -348,14 +357,13 @@ const EditProduct = () => {
                   <input
                     type="number"
                     id="qty"
+                    name="qty"
                     min={1}
                     step={1.0}
                     className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary"
-                    placeholder="Escriba el nombre del producto"
-                    value={product.qty || ''}
-                    onChange={(e) =>
-                      setProduct({ ...product, qty: e.target.value })
-                    }
+                    placeholder="Escriba la cantidad en almacén"
+                    value={formData.qty}
+                    onChange={handleInputChange}
                   />
                 </div>
               </div>
@@ -395,15 +403,7 @@ const EditProduct = () => {
                   Imagen del artículo
                 </label>
                 <div className="flex justify-center">
-                  <img
-                    src={
-                      product.picture
-                        ? `${import.meta.env.VITE_REACT_APP_BACKEND}${product.picture}`
-                        : imgSrcPlaceholder
-                    }
-                    alt={product.name}
-                    className="w-32 h-32 object-contain rounded-md"
-                  />
+                  {/* Aquí puedes agregar la lógica para mostrar la imagen si existe */}
                 </div>
               </div>
               <div className="w-full">
@@ -417,30 +417,7 @@ const EditProduct = () => {
                   <div className="dz-message">
                     <div className="mb-2.5 flex justify-center">
                       <div className="flex h-15 w-15 items-center justify-center rounded-full bg-white text-black shadow-10 dark:bg-black dark:text-white">
-                        <svg
-                          className="fill-current"
-                          width="20"
-                          height="20"
-                          viewBox="0 0 20 20"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <g clipPath="url(#clip0_1867_11682)">
-                            <path
-                              d="M18.75 13.75C18.375 13.75 18.0313 14.0625 18.0313 14.4687V17.25C18.0313 17.5312 17.8125 17.75 17.5312 17.75H2.46875C2.1875 17.75 1.96875 17.5312 1.96875 17.25V14.4687C1.96875 14.0625 1.625 13.75 1.25 13.75C0.875 13.75 0.53125 14.0625 0.53125 14.4687V17.25C0.53125 18.3125 1.375 19.1562 2.4375 19.1562H17.5312C18.5938 19.1562 19.4375 18.3125 19.4375 17.25V14.4687C19.4688 14.0625 19.125 13.75 18.75 13.75Z"
-                              fill=""
-                            />
-                            <path
-                              d="M5.96875 6.46875L9.3125 3.21875V14.0313C9.3125 14.4063 9.625 14.75 10.0312 14.75C10.4062 14.75 10.75 14.4375 10.75 14.0313V3.21875L14.0937 6.46875C14.2187 6.59375 14.4062 6.65625 14.5938 6.65625C14.7812 6.65625 14.9688 6.59375 15.0938 6.4375C15.375 6.15625 15.3438 5.71875 15.0938 5.4375L10.5 1.0625C10.2187 0.8125 9.78125 0.8125 9.53125 1.0625L4.96875 5.46875C4.6875 5.75 4.6875 6.1875 4.96875 6.46875C5.25 6.71875 5.6875 6.75 5.96875 6.46875Z"
-                              fill=""
-                            />
-                          </g>
-                          <defs>
-                            <clipPath id="clip0_1867_11682">
-                              <rect width="20" height="20" fill="white" />
-                            </clipPath>
-                          </defs>
-                        </svg>
+                        <FiUpload className="text-xl" />
                       </div>
                     </div>
                     <span className="font-medium text-black dark:text-white">
@@ -461,7 +438,7 @@ const EditProduct = () => {
                       id="toggle1"
                       className="sr-only"
                       checked={showPrice}
-                      onChange={handleToggleShowPrice}
+                      onChange={handleToogleShowPrice}
                     />
                     <div className="block h-8 w-14 rounded-full bg-[#E5E7EB] dark:bg-[#5A616B]"></div>
                     <div
@@ -488,7 +465,7 @@ const EditProduct = () => {
                       id="wholesaler-toggle1"
                       className="sr-only"
                       checked={showPriceWholesaler}
-                      onChange={handleToggleShowPriceWholesaler}
+                      onChange={handleToogleShowPriceWholesaler}
                     />
                     <div className="block h-8 w-14 rounded-full bg-[#E5E7EB] dark:bg-[#5A616B]"></div>
                     <div
@@ -511,4 +488,4 @@ const EditProduct = () => {
   )
 }
 
-export default EditProduct
+export default CreateProduct

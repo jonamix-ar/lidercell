@@ -7,7 +7,7 @@ import GeneralCard from '@app/components/Cards/GeneralCard'
 import Loading from '@app/components/common/Loading'
 import { toast } from 'react-toastify'
 import { FiArrowLeft, FiSave } from 'react-icons/fi'
-import { updateBrand, getBrandById } from '@app/services/Brands'
+import { updateBrand, getBrandById } from '@app/services/brands'
 
 const EditBrands = () => {
   const { id } = useParams()
@@ -16,7 +16,7 @@ const EditBrands = () => {
   const [enabled, setEnabled] = useState(false)
   const dropzoneRef = useRef(null)
   const imgSrcPlaceholder = 'https://placehold.co/600x400'
-  const imageBrands = `${import.meta.env.VITE_REACT_APP_BACKEND_API_STORAGE}`
+  const imageBrands = `${import.meta.env.VITE_REACT_APP_BACKEND}`
 
   useEffect(() => {
     const fetchBrand = async () => {
@@ -24,19 +24,29 @@ const EditBrands = () => {
         const response = await getBrandById(id)
         if (response.status === 200) {
           setBrand(response.data.brand)
-          setEnabled(response.data.brand.status === 1)
+          setEnabled(response.data.brand.status == 1)
           // Initialize Dropzone here
           if (dropzoneRef.current) {
             const myDropzone = new Dropzone(dropzoneRef.current, {
               url: `${import.meta.env.VITE_REACT_APP_BACKEND_API}/upload`,
-              paramName: 'file', // The name that will be used to transfer the file
-              maxFilesize: 2, // MB
+              paramName: 'file',
+              maxFilesize: 2,
               acceptedFiles: 'image/*',
               addRemoveLinks: true,
               dictDefaultMessage:
                 'Arrastra y suelta archivos aquí o haz clic para subir.',
               init: function () {
+                this.on('sending', function (file, xhr, formData) {
+                  // Intenta eliminar o ajustar el encabezado Cache-Control
+                  xhr.setRequestHeader('Cache-Control', 'no-cache') // o null para omitirlo
+                  xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest') // Agrega si es necesario
+                })
+
                 this.on('success', function (file, response) {
+                  console.log('Response:', response)
+                  if (typeof response === 'string') {
+                    response = JSON.parse(response)
+                  }
                   if (response && response.filePath) {
                     setBrand((prevState) => ({
                       ...prevState,
@@ -51,6 +61,15 @@ const EditBrands = () => {
                       }
                     )
                   }
+                })
+
+                this.on('error', function (file, errorMessage, xhr) {
+                  console.error('Error Message:', errorMessage)
+                  console.error('XHR:', xhr)
+                  toast.error('Error al subir el archivo.', {
+                    position: 'bottom-right',
+                    autoClose: 5000
+                  })
                 })
               }
             })
@@ -127,7 +146,7 @@ const EditBrands = () => {
               <img
                 src={
                   brand.picture
-                    ? `${imageBrands}/${brand.picture}`
+                    ? `${imageBrands}${brand.picture}`
                     : imgSrcPlaceholder
                 }
                 alt={brand.name}

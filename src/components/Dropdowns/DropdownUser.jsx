@@ -9,16 +9,13 @@ const DropdownUser = ({ user }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const roleName = getRoleName(user.role)
 
-  const handleLogout = async () => {
-    try {
-      const resp = await axios.post('/logout')
-      if (resp.status === 200) {
-        localStorage.removeItem('user')
-        window.location.href = '/login'
-      }
-    } catch (error) {
-      console.log(error)
-    }
+  const handleLogout = () => {
+    // Limpiar datos de autenticación en localStorage
+    localStorage.removeItem('user')
+    localStorage.removeItem('token')
+
+    // Redirigir al usuario a la página de login
+    window.location.href = '/login'
   }
 
   return (

@@ -6,12 +6,12 @@ import GeneralCard from '@app/components/Cards/GeneralCard'
 import TableData from '@app/components/Tables/TableData'
 import Badge from '@app/components/UI/Badge'
 import { toast } from 'react-toastify'
-import { deleteBrand } from '@app/services/Brands'
+import { deleteBrand } from '@app/services/brands'
 
 const Brands = () => {
   const [brands, setBrands] = useState([])
   const imgSrcPlaceholder = 'https://placehold.co/600x400'
-  const imageBrands = `${import.meta.env.VITE_REACT_APP_BACKEND_API_STORAGE}`
+  const imageBrands = `${import.meta.env.VITE_REACT_APP_BACKEND}`
 
   useEffect(() => {
     const fetchBrands = async () => {
@@ -73,10 +73,10 @@ const Brands = () => {
       cell: (info) => info.row.original.name
     },
     {
-      id: 'slug',
-      accessorKey: 'slug',
-      header: 'Url',
-      cell: (info) => info.row.original.slug
+      id: 'description',
+      accessorKey: 'description',
+      header: 'Descripción',
+      cell: (info) => info.row.original.description
     },
     {
       id: 'picture',
@@ -87,7 +87,7 @@ const Brands = () => {
           <img
             src={
               info.row.original.picture
-                ? `${imageBrands}/${info.row.original.picture}`
+                ? `${imageBrands}${info.row.original.picture}`
                 : imgSrcPlaceholder
             }
             alt={info.row.original.name}
@@ -101,7 +101,7 @@ const Brands = () => {
       accessorKey: 'status',
       header: 'Estado',
       cell: (info) => {
-        if (info.row.original.status === 1) {
+        if (info.row.original.status == 1) {
           return (
             <Badge type="success" className="text-[12px]">
               Activo
@@ -119,6 +119,7 @@ const Brands = () => {
     {
       id: 'actions',
       header: 'Acciones',
+      accessorKey: 'actions',
       cell: (info) => (
         <div className="flex items-center gap-2">
           <Link

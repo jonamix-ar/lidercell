@@ -1,6 +1,6 @@
 export const roleMapping = {
   admin: 'Administrador',
-  customer: 'Cliente',
+  user: 'Cliente',
   wholesaler: 'Mayorista'
 }
 

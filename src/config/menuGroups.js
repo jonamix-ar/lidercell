@@ -20,7 +20,7 @@ const menuGroups = [
         label: 'Almacen',
         route: '#',
         children: [
-          { label: 'Artículos', route: 'products' },
+          { label: 'Productos', route: 'products' },
           { label: 'Categorías', route: 'categories' },
           { label: 'Marcas', route: 'brands' }
         ]
@@ -44,7 +44,7 @@ const menuGroups = [
           { label: 'Clientes', route: '#' }
         ]
       },
-      { icon: FiUser, label: 'Usuarios', route: '#' },
+      { icon: FiUser, label: 'Usuarios', route: 'users' },
       { icon: FiSettings, label: 'Configuración', route: '#' }
     ]
   },

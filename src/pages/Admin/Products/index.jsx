@@ -17,9 +17,8 @@ const Products = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const data = await getProducts()
-        setProducts(data.products)
-
+        const response = await getProducts()
+        setProducts(response.data.products)
         const dolar = await getDolar()
         setDolar(dolar)
       } catch (error) {
@@ -33,7 +32,6 @@ const Products = () => {
   const handleDelete = async (id) => {
     try {
       const resp = await deleteProduct(id)
-      console.log('🚀 ~ handleDelete ~ resp:', resp)
       if (resp.status === 200) {
         setProducts((prevProducts) =>
           prevProducts.filter((product) => product.id !== id)
@@ -166,7 +164,7 @@ const Products = () => {
       }
     },
     {
-      id: 'action',
+      id: 'actions',
       accessorKey: 'id',
       header: 'Acciones',
       cell: (info) => (

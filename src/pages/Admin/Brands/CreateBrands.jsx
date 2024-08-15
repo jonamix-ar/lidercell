@@ -5,7 +5,7 @@ import 'dropzone/dist/dropzone.css'
 import { toast } from 'react-toastify'
 import { Link, useNavigate } from 'react-router-dom'
 import { FiArrowLeft, FiSave } from 'react-icons/fi'
-import { createBrand } from '@app/services/Brands'
+import { createBrand } from '@app/services/brands'
 
 const CreateBrands = () => {
   const [brands, setBrands] = useState({
@@ -61,6 +61,7 @@ const CreateBrands = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
+      console.log(brands)
       await createBrand(brands)
       toast.success('Marca creada exitosamente', {
         position: 'bottom-right',
@@ -82,7 +83,7 @@ const CreateBrands = () => {
     setEnabled(!enabled)
     setBrands((prevState) => ({
       ...prevState,
-      status: !enabled ? 1 : 0
+      status: !enabled ? 1 : 0 // Aquí cambias el estado del toggle
     }))
   }
 

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import axios from '@app/libs/axios'
+import { Link } from 'react-router-dom'
 import GeneralCard from '@app/components/Cards/GeneralCard'
 import TableData from '@app/components/Tables/TableData'
 import Badge from '@app/components/UI/Badge'
 import { FiEdit, FiPlus, FiTrash } from 'react-icons/fi'
-import { Link } from 'react-router-dom'
 import { toast } from 'react-toastify'
+import { getCategories, deleteCategory } from '@app/services/categories'
 
 const Categories = () => {
   const [categories, setCategories] = useState([])
@@ -13,9 +13,10 @@ const Categories = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const resp = await axios.get('/categories')
-        if (resp.status === 200) {
-          setCategories(resp.data.data)
+        const response = await getCategories()
+        console.log('🚀 ~ fetchData ~ response:', response)
+        if (response.status === 200) {
+          setCategories(response.data.categories)
         }
       } catch (error) {
         if (error.response && error.response.status === 401) {
@@ -28,7 +29,7 @@ const Categories = () => {
 
   const handleDelete = async (id) => {
     try {
-      const resp = await axios.delete(`/categories/${id}/delete`)
+      const resp = await deleteCategory(id)
       if (resp.status === 200) {
         setCategories(categories.filter((category) => category.id !== id))
         toast.success('Categoría eliminada exitosamente', {
@@ -90,7 +91,7 @@ const Categories = () => {
       accessorKey: 'status',
       header: 'Estatus',
       cell: (info) => {
-        if (info.row.original.status === 1) {
+        if (info.row.original.status == 1) {
           return (
             <Badge type="success" className="text-[12px]">
               Activo
@@ -125,7 +126,9 @@ const Categories = () => {
           </button>
         </div>
       ),
-      size: 50
+      size: 10,
+      minSize: 10,
+      maxSize: 10
     }
   ]
 

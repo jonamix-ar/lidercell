@@ -68,28 +68,33 @@ const TableData = ({ data, columns }) => {
                   <th
                     key={header.id}
                     className={`whitespace-pre-line p-4 font-medium text-black dark:text-white`}
-                    style={{
-                      minWidth: header.getSize() ? header.getSize() : 0
-                    }}
+                    style={{ width: `${header.getSize()}px` }}
                   >
                     {header.isPlaceholder ? null : (
                       <>
                         <div
                           {...{
-                            className: header.column.getCanSort()
-                              ? 'cursor-pointer select-none'
-                              : '',
-                            onClick: header.column.getToggleSortingHandler()
+                            className:
+                              header.column.id == 'actions'
+                                ? ''
+                                : 'cursor-pointer select-none',
+                            onClick:
+                              header.column.id === 'actions'
+                                ? undefined
+                                : header.column.getToggleSortingHandler()
                           }}
                         >
                           {flexRender(
                             header.column.columnDef.header,
                             header.getContext()
                           )}
-                          {{
-                            asc: ' 🔼',
-                            desc: ' 🔽'
-                          }[header.column.getIsSorted()] ?? null}
+                          {header.column.id == 'actions'
+                            ? null
+                            : header.column.getIsSorted()
+                              ? header.column.getIsSorted() === 'asc'
+                                ? ' 🔼'
+                                : ' 🔽'
+                              : null}
                         </div>
                       </>
                     )}

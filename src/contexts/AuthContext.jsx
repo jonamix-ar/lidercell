@@ -3,35 +3,33 @@ import axios from '../libs/axios'
 
 const AuthContent = createContext({
   user: null,
+  token: null,
   setUser: () => {},
-  csrfToken: () => {}
+  login: () => {},
+  logout: () => {}
 })
 
 export const AuthProvider = ({ children }) => {
   const [user, _setUser] = useState(
     JSON.parse(localStorage.getItem('user')) || null
   )
+  const [token, _setToken] = useState(localStorage.getItem('token') || null)
 
-  // set user to local storage
-  const setUser = (user) => {
-    if (user) {
+  // Set user and token to local storage
+  const setUser = (user, token) => {
+    if (user && token) {
       localStorage.setItem('user', JSON.stringify(user))
+      localStorage.setItem('token', token)
     } else {
       localStorage.removeItem('user')
+      localStorage.removeItem('token')
     }
     _setUser(user)
-  }
-
-  // csrf token generation for guest methods
-  const csrfToken = async () => {
-    await axios.get(
-      `${import.meta.env.VITE_REACT_APP_BACKEND}/sanctum/csrf-cookie`
-    )
-    return true
+    _setToken(token)
   }
 
   return (
-    <AuthContent.Provider value={{ user, setUser, csrfToken }}>
+    <AuthContent.Provider value={{ user, token, setUser }}>
       {children}
     </AuthContent.Provider>
   )

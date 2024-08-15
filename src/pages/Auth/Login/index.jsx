@@ -1,7 +1,7 @@
 import React from 'react'
-
-import LogoLidercell from '../../../components/common/LogoLidercell'
-import LoginForm from '../../../components/Form/LoginForm'
+import LogoLidercell from '@app/components/common/LogoLidercell'
+import LoginForm from '@app/components/Form/LoginForm'
+import { ToastContainer } from 'react-toastify'
 
 const Login = () => {
   return (
@@ -34,6 +34,7 @@ const Login = () => {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </>
   )
 }

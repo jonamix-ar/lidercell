@@ -20,12 +20,12 @@ const StatsCard = ({
         >
           <div className="flex-auto p-4">
             <div className="flex flex-row justify-between">
-              <div className="flex-none w-2/3 max-w-full px-3">
+              <div className="flex-none w-2/3 max-w-full px-1">
                 <div>
-                  <p className="mb-0 font-sans font-semibold leading-normal uppercase dark:text-white dark:opacity-60 text-sm">
+                  <p className="mb-0 font-sans font-semibold leading-normal uppercase text-slate-700 dark:text-white dark:opacity-60 text-sm">
                     {title}
                   </p>
-                  <h5 className="mb-2 font-bold dark:text-white text-2xl">
+                  <h5 className="mb-2 font-bold text-slate-700 dark:text-white text-2xl">
                     {`${isAmount ? money(value) : value}`}
                   </h5>
                   {extended && (

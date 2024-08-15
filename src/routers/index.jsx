@@ -22,8 +22,12 @@ const Brands = lazy(() => import('../pages/Admin/Brands'))
 const CreateBrands = lazy(() => import('../pages/Admin/Brands/CreateBrands'))
 const EditBrands = lazy(() => import('../pages/Admin/Brands/EditBrands'))
 const Products = lazy(() => import('../pages/Admin/Products'))
+const CreateProduct = lazy(
+  () => import('../pages/Admin/Products/CreateProduct')
+)
 const EditProduct = lazy(() => import('../pages/Admin/Products/EditProduct'))
-
+const Users = lazy(() => import('../pages/Admin/Users'))
+const CreateUsers = lazy(() => import('../pages/Admin/Users/CreateUsers'))
 const Sales = lazy(() => import('../pages/Admin/Sales'))
 
 // Error
@@ -54,7 +58,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'categories',
-        element: <Categories />
+        element: <Categories />,
       },
       {
         path: 'categories/:id',
@@ -81,12 +85,24 @@ const router = createBrowserRouter([
         element: <Products />
       },
       {
+        path: 'products/create',
+        element: <CreateProduct />
+      },
+      {
         path: 'products/:id',
         element: <EditProduct />
       },
       {
         path: 'sales',
         element: <Sales />
+      },
+      {
+        path: 'users',
+        element: <Users />
+      },
+      {
+        path: 'users/create',
+        element: <CreateUsers />
       }
     ]
   },

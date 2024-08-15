@@ -11,7 +11,7 @@ export const getBrands = async () => {
 
 export const getBrandById = async (id) => {
   try {
-    const data = await api.get(`/brands/${id}/edit`)
+    const data = await api.get(`/brands/${id}`)
     return data
   } catch (error) {
     console.error('Error al obtener los datos de configuración:', error)
@@ -30,7 +30,7 @@ export const createBrand = async (brand) => {
 
 export const updateBrand = async (id, brand, enabled) => {
   try {
-    const { data } = await api.put(`/brands/${id}/update`, {
+    const { data } = await api.put(`/brands/${id}`, {
       ...brand,
       status: enabled ? 1 : 0
     })
@@ -44,7 +44,7 @@ export const updateBrand = async (id, brand, enabled) => {
 
 export const deleteBrand = async (id) => {
   try {
-    const response = await api.delete(`/brands/${id}/delete`)
+    const response = await api.delete(`/brands/${id}`)
     // Ensure the response has a `data` property with a status or message
     return response
   } catch (error) {

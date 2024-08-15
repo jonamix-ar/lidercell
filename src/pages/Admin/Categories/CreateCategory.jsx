@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import GeneralCard from '@app/components/Cards/GeneralCard'
 import { FiArrowLeft, FiSave } from 'react-icons/fi'
 import { Link, useNavigate } from 'react-router-dom'
-import axios from '@app/libs/axios'
 import { toast } from 'react-toastify'
+import { createCategory } from '@app/services/categories'
 
 const CreateCategory = () => {
   const [enabled, setEnabled] = useState(false)
@@ -31,7 +31,7 @@ const CreateCategory = () => {
     }
 
     try {
-      const response = await axios.post('/categories', newCategory)
+      const response = await createCategory(newCategory)
 
       if (response.status === 201) {
         toast.success('Categoría creada exitosamente', {

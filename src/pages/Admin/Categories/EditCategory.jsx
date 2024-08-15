@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import axios from '@app/libs/axios'
 import { toast } from 'react-toastify'
 import GeneralCard from '@app/components/Cards/GeneralCard'
 import Loading from '@app/components/common/Loading'
 import { FiArrowLeft, FiSave } from 'react-icons/fi'
+import { getCategoryById, updateCategory } from '@app/services/categories'
 
 const EditCategory = () => {
   let { id } = useParams()
@@ -15,11 +15,11 @@ const EditCategory = () => {
   useEffect(() => {
     const fetchCategory = async () => {
       try {
-        const resp = await axios.get(`/categories/${id}/edit`)
+        const resp = await getCategoryById(id)
         console.log('🚀 ~ fetchCategory ~ resp:', resp)
         if (resp.status === 200) {
-          setCategory(resp.data.data)
-          setEnabled(resp.data.data.status === 1)
+          setCategory(resp.data.category)
+          setEnabled(resp.data.category.status == 1)
         }
       } catch (error) {
         console.log(error)
@@ -31,20 +31,23 @@ const EditCategory = () => {
 
   const handleUpdate = async (event) => {
     event.preventDefault()
+
     try {
-      await axios.put(`/categories/${id}/update`, {
+      const updatedCategory = {
         ...category,
-        status: enabled ? 1 : 0
-      })
-      // Handle successful update
+        enabled: enabled ? 1 : 0
+      }
+
+      await updateCategory(id, updatedCategory)
+
       toast.success('Categoría actualizada correctamente', {
         position: 'bottom-right',
         autoClose: 5000
       })
+
       navigate('/admin/categories')
-      // console.log('Category updated successfully')
     } catch (error) {
-      toast.error('Error updating category:', error, {
+      toast.error('Error al actualizar la categoría', {
         position: 'bottom-right',
         autoClose: 5000
       })
