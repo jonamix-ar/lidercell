@@ -25,6 +25,7 @@ const Navigation = ({ user, sidebarOpen, setSidebarOpen }) => {
               colorSecondary={'#fff'}
               stroke={'#000'}
               className={'w-[165px] h-[35px]'}
+              alt="Logo Lidercell"
             />
           </Link>
         </div>

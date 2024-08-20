@@ -1,10 +1,9 @@
 import React from 'react'
 import ProductCard from '@app/components/Products/ProductCard'
 
-const ProductGrid = ({ products, totalPages }) => {
+const ProductGrid = ({ products }) => {
   return (
     <>
-      {totalPages}
       {products.map((product) => (
         <ProductCard key={product.id} product={product} />
       ))}
