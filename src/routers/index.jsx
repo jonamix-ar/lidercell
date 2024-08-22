@@ -29,6 +29,10 @@ const EditProduct = lazy(() => import('../pages/Admin/Products/EditProduct'))
 const Users = lazy(() => import('../pages/Admin/Users'))
 const CreateUsers = lazy(() => import('../pages/Admin/Users/CreateUsers'))
 const Sales = lazy(() => import('../pages/Admin/Sales'))
+const Customers = lazy(() => import('../pages/Admin/Customers'))
+const EditCustomers = lazy(
+  () => import('../pages/Admin/Customers/EditCustomers')
+)
 
 // Error
 const NotFound = lazy(() => import('../pages/Error/NotFound'))
@@ -58,7 +62,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'categories',
-        element: <Categories />,
+        element: <Categories />
       },
       {
         path: 'categories/:id',
@@ -95,6 +99,14 @@ const router = createBrowserRouter([
       {
         path: 'sales',
         element: <Sales />
+      },
+      {
+        path: 'customers',
+        element: <Customers />
+      },
+      {
+        path: 'customers/:id',
+        element: <EditCustomers />
       },
       {
         path: 'users',

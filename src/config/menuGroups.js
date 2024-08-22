@@ -41,7 +41,7 @@ const menuGroups = [
         children: [
           { label: 'Nueva venta', route: 'sales' },
           { label: 'Ventas', route: '#' },
-          { label: 'Clientes', route: '#' }
+          { label: 'Clientes', route: 'customers' }
         ]
       },
       { icon: FiUser, label: 'Usuarios', route: 'users' },
