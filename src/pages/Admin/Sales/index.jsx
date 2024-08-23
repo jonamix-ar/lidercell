@@ -11,6 +11,7 @@ import {
 } from 'react-icons/fi'
 import GeneralCard from '@app/components/Cards/GeneralCard'
 import { getProductsSearch } from '@app/services/products'
+import { getCustomersSearch } from '@app/services/customers'
 import { money, moneyArs } from '@app/utils/money'
 import { getDolar } from '@app/services/dolar'
 import { useAuth } from '@app/contexts/AuthContext'
@@ -51,14 +52,18 @@ const Sales = () => {
   )
   const [selectedDocumentType, setSelectedDocumentType] = useState('')
 
+  // Nuevos estados para clientes
+  const [clientQuery, setClientQuery] = useState('')
+  const [clientSuggestions, setClientSuggestions] = useState([])
+  const [isClientFocused, setIsClientFocused] = useState(false)
+  const [selectedClient, setSelectedClient] = useState(null)
+
   useEffect(() => {
     const fetchProducts = async () => {
       if (query.length > 2) {
         // Fetch only if query is more than 2 characters
         try {
           const data = await getProductsSearch()
-          console.log('Fetched products:', data) // Log the response data
-
           // Assuming data contains an array of products
           const filteredSuggestions = data.filter(
             (product) =>
@@ -77,6 +82,37 @@ const Sales = () => {
     fetchProducts()
   }, [query])
 
+  // search Customers
+  useEffect(() => {
+    const fetchClients = async () => {
+      console.log('Fetching clients with query:', clientQuery)
+      if (clientQuery.length > 2) {
+        try {
+          const response = await getCustomersSearch(clientQuery)
+          console.log('API response:', response)
+
+          if (response && Array.isArray(response)) {
+            const filteredSuggestions = response.filter(
+              (client) =>
+                client.name.toLowerCase().includes(clientQuery.toLowerCase()) ||
+                client.id.toString().includes(clientQuery)
+            )
+            console.log('Filtered suggestions:', filteredSuggestions)
+            setClientSuggestions(filteredSuggestions)
+          } else {
+            console.error('Unexpected response format:', response)
+          }
+        } catch (error) {
+          console.error('Error fetching clients:', error)
+        }
+      } else {
+        setClientSuggestions([])
+      }
+    }
+
+    fetchClients()
+  }, [clientQuery])
+
   useEffect(() => {
     const fetchDolar = async () => {
       try {
@@ -92,6 +128,13 @@ const Sales = () => {
 
   const handleChange = (event) => {
     setSelectedDocumentType(event.target.value)
+  }
+
+  const handleClientSuggestionClick = (client) => {
+    setSelectedClient(client)
+    setClientQuery(`${client.name} (${client.id})`)
+    setClientSuggestions([])
+    setIsClientFocused(false)
   }
 
   // Handle suggestion click
@@ -190,7 +233,7 @@ const Sales = () => {
     // Armar el objeto con los datos de la venta
     const saleData = {
       date: saleDate,
-      customer_id: 1,
+      customer_id: selectedClient.id,
       seller_id: user.id,
       receipt: selectedDocumentType,
       payment_method: paymentType.toString(), // Ensure payment_method is a string
@@ -213,9 +256,6 @@ const Sales = () => {
       total: parseFloat(product.price) * product.quantity // Convert to number
     }))
 
-    console.log('Sale Data:', saleData)
-    console.log('Sale Products:', saleProducts)
-
     try {
       const response = await api.post('/sales', {
         sale: saleData,
@@ -231,7 +271,7 @@ const Sales = () => {
       console.error('Error creating sale:', error)
     }
   }
-
+  console.log('isClientFocused:', isClientFocused)
   return (
     <form onSubmit={handleSubmit}>
       <div className="flex flex-row gap-5.5 p-3">
@@ -276,7 +316,31 @@ const Sales = () => {
                         id="simple-search"
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Buscar por nombre o ID de cliente..."
+                        value={clientQuery}
+                        onChange={(e) => {
+                          setClientQuery(e.target.value)
+                          setSelectedClient(null) // Reiniciar el cliente seleccionado si se cambia la búsqueda
+                        }}
+                        onFocus={() => setIsClientFocused(true)}
+                        onBlur={() =>
+                          setTimeout(() => setIsClientFocused(false), 200)
+                        }
                       />
+                      {isClientFocused && clientSuggestions.length > 0 && (
+                        <ul className="absolute bg-white border border-gray-300 w-full mt-1 rounded-lg z-10 max-h-60 overflow-y-auto">
+                          {clientSuggestions.map((client) => (
+                            <li
+                              key={client.id}
+                              className="p-2 cursor-pointer hover:bg-gray-200"
+                              onClick={() =>
+                                handleClientSuggestionClick(client)
+                              }
+                            >
+                              {client.name} - ID: {client.id}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
                     <button
                       type="submit"
@@ -285,6 +349,12 @@ const Sales = () => {
                       <FiPlus className="w-4 h-4" />
                       <span>Agregar</span>
                     </button>
+                    {/* {selectedClient && (
+                      <div className="mt-2 text-sm text-gray-700 dark:text-gray-300">
+                        Cliente seleccionado: {selectedClient.name} (ID:{' '}
+                        {selectedClient.id})
+                      </div>
+                    )} */}
                   </div>
                 </div>
               </div>
@@ -315,7 +385,7 @@ const Sales = () => {
                           onClick={() => handleSuggestionClick(suggestion)}
                         >
                           {suggestion.name} - {suggestion.sku} -{' '}
-                          {suggestion.color}
+                          {suggestion.price} -{suggestion.color}
                         </li>
                       ))}
                     </ul>

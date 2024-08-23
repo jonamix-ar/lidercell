@@ -95,7 +95,7 @@ const EditCustomers = () => {
       // Notify the user about the success
       toast.success('Customer updated successfully')
       // Redirect to the customer list page
-      // navigate('/admin/customers')
+      navigate('/admin/customers')
     } catch (error) {
       console.error('Error updating customer:', error)
       // Notify the user about the error

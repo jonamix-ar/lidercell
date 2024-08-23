@@ -93,3 +93,41 @@ export const getProductsSearch = async () => {
     throw error
   }
 }
+
+export const exportProducts = async () => {
+  try {
+    const response = await api.get('/products/export', {
+      responseType: 'blob' // Importante para manejar el archivo
+    })
+
+    // Crear un enlace de descarga
+    const url = window.URL.createObjectURL(new Blob([response.data]))
+    const link = document.createElement('a')
+    link.href = url
+    link.setAttribute('download', 'productos.xlsx') // Nombre del archivo
+    document.body.appendChild(link)
+    link.click()
+
+    // Limpiar URL creada
+    window.URL.revokeObjectURL(url)
+  } catch (error) {
+    console.error('Error al exportar:', error)
+  }
+}
+
+export const importProducts = async (file) => {
+  const formData = new FormData()
+  formData.append('file', file)
+
+  try {
+    const response = await api.post('/products/import', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+    return response.data
+  } catch (error) {
+    console.error('Error al importar:', error)
+    throw error
+  }
+}

@@ -9,6 +9,8 @@ import { money } from '@app/utils/money'
 import { getDolar } from '@app/services/dolar'
 import { getProducts, deleteProduct } from '@app/services/products'
 import { toast } from 'react-toastify'
+import { exportProducts } from '../../../services/products'
+import ImportExcel from '../../../components/common/ImportExcel'
 
 const Products = () => {
   const [products, setProducts] = useState([])
@@ -187,18 +189,23 @@ const Products = () => {
     }
   ]
 
+  const handleExport = async () => {
+    exportProducts()
+  }
+
   return (
     <GeneralCard
       title="Listado de Productos"
       className="pb-2"
       button={
         <div className="flex justify-end gap-2">
-          <Link className="inline-flex items-center justify-center gap-2 p-2 rounded-md bg-slate-800 text-sm text-center font-medium text-white hover:bg-opacity-90 ">
+          <button
+            onClick={handleExport}
+            className="inline-flex items-center justify-center gap-2 p-2 rounded-md bg-slate-800 text-sm text-center font-medium text-white hover:bg-opacity-90 "
+          >
             <FaFileExport /> Export Productos
-          </Link>
-          <Link className="inline-flex items-center justify-center gap-2 p-2 rounded-md bg-slate-800 text-sm text-center font-medium text-white hover:bg-opacity-90 ">
-            <FaFileImport /> Importar Productos
-          </Link>
+          </button>
+          <ImportExcel />
           <Link
             to="/admin/products/create"
             className="inline-flex items-center justify-center gap-2 p-2 rounded-md bg-slate-800 text-sm text-center font-medium text-white hover:bg-opacity-90 "
