@@ -15,15 +15,12 @@ import { getCustomersSearch } from '@app/services/customers'
 import { money, moneyArs } from '@app/utils/money'
 import { getDolar } from '@app/services/dolar'
 import { useAuth } from '@app/contexts/AuthContext'
-import api from '@app/libs/api'
 import { toast } from 'react-toastify'
-
-const documentTypes = [
-  { id: 1, name: 'Factura' },
-  { id: 2, name: 'Remito' },
-  { id: 3, name: 'Ticket' },
-  { id: 6, name: 'Nota de Credito' }
-]
+import {
+  generateSales,
+  getDocumentTypes,
+  getDocumentNumber
+} from '@app/services/sales'
 
 const paymentTypes = [
   { id: 1, name: 'Dolares' },
@@ -32,7 +29,7 @@ const paymentTypes = [
 ]
 
 const Sales = () => {
-  const { user, setUser } = useAuth()
+  const { user } = useAuth()
   const navigate = useNavigate()
   const [dolar, setDolar] = useState({})
   const [query, setQuery] = useState('')
@@ -51,12 +48,27 @@ const Sales = () => {
     new Date().toISOString().split('T')[0]
   )
   const [selectedDocumentType, setSelectedDocumentType] = useState('')
+  const [documentNumber, setDocumentNumber] = useState('')
 
   // Nuevos estados para clientes
   const [clientQuery, setClientQuery] = useState('')
   const [clientSuggestions, setClientSuggestions] = useState([])
   const [isClientFocused, setIsClientFocused] = useState(false)
   const [selectedClient, setSelectedClient] = useState(null)
+  const [receipts, setReceipts] = useState([])
+
+  useEffect(() => {
+    const fetchReceipts = async () => {
+      try {
+        const response = await getDocumentTypes()
+        setReceipts(response.data.receipts)
+      } catch (error) {
+        console.error('Error fetching receipts:', error)
+      }
+    }
+
+    fetchReceipts()
+  }, []) // Elimina `receipts` de las dependencias
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -126,8 +138,26 @@ const Sales = () => {
     fetchDolar()
   }, [])
 
-  const handleChange = (event) => {
-    setSelectedDocumentType(event.target.value)
+  const handleDocumentTypeChange = async (event) => {
+    const selectedType = event.target.value
+    setSelectedDocumentType(selectedType)
+
+    if (selectedType) {
+      try {
+        const response = await getDocumentNumber(selectedType)
+        console.log('Respuesta de getDocumentNumber:', response)
+
+        if (response?.documentNumber) {
+          setDocumentNumber(response.documentNumber)
+          console.log('Número de documento generado:', response.documentNumber)
+        } else {
+          toast.error('No se pudo generar el número de documento.')
+        }
+      } catch (error) {
+        console.error('Error al obtener el número de documento:', error)
+        toast.error('Error al generar el número de documento.')
+      }
+    }
   }
 
   const handleClientSuggestionClick = (client) => {
@@ -230,48 +260,58 @@ const Sales = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    // Armar el objeto con los datos de la venta
-    const saleData = {
-      date: saleDate,
-      customer_id: selectedClient.id,
-      seller_id: user.id,
-      receipt: selectedDocumentType,
-      payment_method: paymentType.toString(), // Ensure payment_method is a string
-      amount_paid_dolar:
-        paymentType === 1
-          ? parseFloat(amountPaid) || 0
-          : paymentType === 2
-            ? parseFloat(amountInDollars) || 0
-            : 0, // Monto pagado en dólares si paymentType es 1
-      amount_paid_ars: paymentType === 2 ? calculateRemainingAmount() || 0 : 0, // Monto pagado en ARS si paymentType es 2, sino calculamos el monto restante en dólares
-      amount_percent: transactionPercentage,
-      total: calculateTotalFinal() || 0
+    if (!documentNumber) {
+      toast.error('No se ha generado un número de documento.')
+      return
     }
-
-    // Armar el objeto con los productos de la venta
-    const saleProducts = selectedProducts.map((product) => ({
-      product_id: product.id,
-      quantity: product.quantity,
-      price: parseFloat(product.price), // Convert to number
-      total: parseFloat(product.price) * product.quantity // Convert to number
-    }))
 
     try {
-      const response = await api.post('/sales', {
-        sale: saleData,
-        products: saleProducts
-      })
-      console.log('Response:', response.data)
-      if (response.status === 200) {
-        //localStorage.removeItem('selectedProducts')
+      const saleData = {
+        date: saleDate,
+        customer_id: selectedClient.id,
+        seller_id: user.id,
+        receipts: documentNumber, // Cambiado de `receipt` a `receipts`
+        payment_method: parseInt(paymentType.toString(), 10),
+        amount_paid_dolar:
+          paymentType === 1
+            ? parseFloat(amountPaid) || 0
+            : paymentType === 2
+              ? parseFloat(amountInDollars) || 0
+              : 0,
+        amount_paid_ars:
+          paymentType === 2 ? calculateRemainingAmount() || 0 : 0,
+        amount_percent: transactionPercentage,
+        total: calculateTotalFinal() || 0
+      }
+
+      const saleProducts = selectedProducts.map((product) => ({
+        product_id: product.id,
+        quantity: product.quantity,
+        price: parseFloat(product.price),
+        total: parseFloat(product.price) * product.quantity
+      }))
+
+      console.log('Datos de la venta antes de enviar:', saleData)
+      console.log('Productos de la venta antes de enviar:', saleProducts)
+
+      const saleResponse = await generateSales(saleData, saleProducts)
+      console.log('Respuesta de la API de la venta:', saleResponse)
+
+      if (saleResponse) {
         toast.success('Venta creada correctamente')
+        localStorage.removeItem('selectedProducts')
         navigate('/admin/sales')
+      } else {
+        toast.error(
+          'Error al crear la venta. La API no devolvió una respuesta esperada.'
+        )
       }
     } catch (error) {
-      console.error('Error creating sale:', error)
+      console.error('Error al crear la venta:', error)
+      toast.error('Hubo un error al crear la venta.')
     }
   }
-  console.log('isClientFocused:', isClientFocused)
+
   return (
     <form onSubmit={handleSubmit}>
       <div className="flex flex-row gap-5.5 p-3">
@@ -316,6 +356,7 @@ const Sales = () => {
                         id="simple-search"
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Buscar por nombre o ID de cliente..."
+                        autoComplete="off"
                         value={clientQuery}
                         onChange={(e) => {
                           setClientQuery(e.target.value)
@@ -477,9 +518,10 @@ const Sales = () => {
                   id="document-type"
                   className="bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                   value={selectedDocumentType}
-                  onChange={handleChange}
+                  onChange={handleDocumentTypeChange}
                 >
-                  {documentTypes.map((documentType) => (
+                  <option value="">-- Seleccione --</option>
+                  {receipts.map((documentType) => (
                     <option key={documentType.id} value={documentType.id}>
                       {documentType.name}
                     </option>

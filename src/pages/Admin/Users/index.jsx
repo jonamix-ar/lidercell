@@ -13,7 +13,10 @@ const Users = () => {
     const fetchData = async () => {
       try {
         const response = await getUsers()
-        setUsers(response.data.users)
+        const adminUsers = response.data.users.filter(
+          (user) => user.role === 'admin'
+        )
+        setUsers(adminUsers)
       } catch (error) {
         console.error('Error al obtener los datos de configuración:', error)
       }

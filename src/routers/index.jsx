@@ -29,6 +29,7 @@ const EditProduct = lazy(() => import('../pages/Admin/Products/EditProduct'))
 const Users = lazy(() => import('../pages/Admin/Users'))
 const CreateUsers = lazy(() => import('../pages/Admin/Users/CreateUsers'))
 const Sales = lazy(() => import('../pages/Admin/Sales'))
+const SalesList = lazy(() => import('../pages/Admin/Sales/SalesList'))
 const Customers = lazy(() => import('../pages/Admin/Customers'))
 const EditCustomers = lazy(
   () => import('../pages/Admin/Customers/EditCustomers')
@@ -97,8 +98,12 @@ const router = createBrowserRouter([
         element: <EditProduct />
       },
       {
-        path: 'sales',
+        path: 'sales/new',
         element: <Sales />
+      },
+      {
+        path: 'sales',
+        element: <SalesList />
       },
       {
         path: 'customers',

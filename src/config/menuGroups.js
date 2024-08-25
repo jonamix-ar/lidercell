@@ -39,8 +39,8 @@ const menuGroups = [
         label: 'Ventas',
         route: '#',
         children: [
-          { label: 'Nueva venta', route: 'sales' },
-          { label: 'Ventas', route: '#' },
+          { label: 'Nueva venta', route: 'sales/new' },
+          { label: 'Ventas', route: 'sales' },
           { label: 'Clientes', route: 'customers' }
         ]
       },
