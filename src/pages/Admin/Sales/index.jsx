@@ -97,11 +97,9 @@ const Sales = () => {
   // search Customers
   useEffect(() => {
     const fetchClients = async () => {
-      console.log('Fetching clients with query:', clientQuery)
       if (clientQuery.length > 2) {
         try {
           const response = await getCustomersSearch(clientQuery)
-          console.log('API response:', response)
 
           if (response && Array.isArray(response)) {
             const filteredSuggestions = response.filter(
@@ -109,7 +107,6 @@ const Sales = () => {
                 client.name.toLowerCase().includes(clientQuery.toLowerCase()) ||
                 client.id.toString().includes(clientQuery)
             )
-            console.log('Filtered suggestions:', filteredSuggestions)
             setClientSuggestions(filteredSuggestions)
           } else {
             console.error('Unexpected response format:', response)
@@ -145,11 +142,9 @@ const Sales = () => {
     if (selectedType) {
       try {
         const response = await getDocumentNumber(selectedType)
-        console.log('Respuesta de getDocumentNumber:', response)
 
         if (response?.documentNumber) {
           setDocumentNumber(response.documentNumber)
-          console.log('Número de documento generado:', response.documentNumber)
         } else {
           toast.error('No se pudo generar el número de documento.')
         }
@@ -390,12 +385,6 @@ const Sales = () => {
                       <FiPlus className="w-4 h-4" />
                       <span>Agregar</span>
                     </button>
-                    {/* {selectedClient && (
-                      <div className="mt-2 text-sm text-gray-700 dark:text-gray-300">
-                        Cliente seleccionado: {selectedClient.name} (ID:{' '}
-                        {selectedClient.id})
-                      </div>
-                    )} */}
                   </div>
                 </div>
               </div>
@@ -425,8 +414,9 @@ const Sales = () => {
                           className="p-2 cursor-pointer hover:bg-gray-200"
                           onClick={() => handleSuggestionClick(suggestion)}
                         >
-                          {suggestion.name} - {suggestion.sku} -{' '}
-                          {suggestion.price} -{suggestion.color}
+                          {suggestion.sku} | {suggestion.name}:{' '}
+                          {money(suggestion.price)} | {suggestion.color}{' '}
+                          {suggestion.storage} | Cantidad: {suggestion.qty}
                         </li>
                       ))}
                     </ul>
