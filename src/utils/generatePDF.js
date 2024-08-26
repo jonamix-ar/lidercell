@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf'
 import { money, numeroALetras } from './money'
+import { formatDocumentType, formatReceipt, formatReceiptType } from './format'
 import logo from '../assets/images/logo/logo.png'
 
 export const generatePDF = (sale) => {
@@ -38,7 +39,11 @@ export const generatePDF = (sale) => {
   roundedRect(pageWidth - 200, startY, 160, 50, 5)
   doc.setFontSize(11)
   doc.setFont('helvetica', 'bold')
-  doc.text(`Factura N° : ${sale.receipts}`, pageWidth - 190, startY + 20)
+  doc.text(
+    `${formatReceiptType(formatReceipt(sale.receipts))} N° : ${sale.receipts}`,
+    pageWidth - 190,
+    startY + 20
+  )
 
   doc.setFontSize(9)
   doc.setFont('helvetica', 'normal')
@@ -68,7 +73,7 @@ export const generatePDF = (sale) => {
     clientStartY + 50
   )
   doc.text(
-    `${profile.document_type || 'Sin documento'}: ${profile.document_number}`,
+    `${formatDocumentType(profile.document_type) || 'Sin documento'}: ${profile.document_number || 'Sin numero de documento'}`,
     startX + 10,
     clientStartY + 65
   )
@@ -77,7 +82,11 @@ export const generatePDF = (sale) => {
     startX + 200,
     clientStartY + 50
   )
-  doc.text(`Teléfono: ${sale.customer.phone}`, startX + 200, clientStartY + 65)
+  doc.text(
+    `Teléfono: ${sale.customer.phone || 'Sin telefono'}`,
+    startX + 200,
+    clientStartY + 65
+  )
 
   // Tabla de productos
   const tableStartY = clientStartY + 100
