@@ -7,6 +7,30 @@
   body {
     @apply font-normal text-base text-slate-400 bg-[#F1F5F9] relative z-1;
   }
+
+  /* Estilo global para personalizar la scrollbar en webkit (Chrome, Safari) */
+  ::-webkit-scrollbar {
+    width: 8px; /* Ancho de la scrollbar */
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Color del rastro */
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #888; /* Color del pulgar */
+    border-radius: 4px; /* Esquinas redondeadas del pulgar */
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Color del pulgar al pasar el ratón */
+  }
+
+  /* Estilo para la scrollbar en Firefox */
+  .custom-scrollbar {
+    scrollbar-width: thin; /* Ancho de la scrollbar */
+    scrollbar-color: #888 #f1f1f1; /* Color del pulgar y del rastro */
+  }
 }
 
 @layer components {
