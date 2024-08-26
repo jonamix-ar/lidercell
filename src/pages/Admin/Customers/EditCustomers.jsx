@@ -18,30 +18,21 @@ const EditCustomers = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Obtener el cliente
         const response = await getCustomerById(id)
         const customerData = response.data.customer
         setCustomer(customerData)
 
-        // Obtener estados y localidades
         const statesResponse = await getStates()
         setStates(statesResponse.data.states)
 
         const localitiesResponse = await getLocalities()
         setAllLocalities(localitiesResponse.data.localities)
 
-        // Configurar estado y localidad del perfil del cliente
         const profile = customerData.profiles[0] || {}
-        const profileStateId = profile.state_id || null
-        console.log('🚀 ~ fetchData ~ profileStateId:', profileStateId)
-        const profileLocalityId = profile.locality_id || null
-        console.log('🚀 ~ fetchData ~ profileLocalityId:', profileLocalityId)
-
-        // Configurar el estado y la localidad
-        setStateId(profileStateId)
-        setLocalityId(profileLocalityId)
+        setStateId(profile.state_id || '')
+        setLocalityId(profile.locality_id || '')
       } catch (error) {
-        console.error('Error al obtener los datos de configuración:', error)
+        console.error('Error fetching data:', error)
       }
     }
 
@@ -57,48 +48,54 @@ const EditCustomers = () => {
 
     if (id === 'state_id') {
       setStateId(value)
-      setLocalityId('') // Reinicia la localidad cuando cambias el estado
+      setLocalityId('')
     } else if (id === 'city_id') {
       setLocalityId(value)
     }
 
-    // Asegúrate de que los cambios en el select actualicen el estado del cliente
     setCustomer((prevCustomer) => ({
       ...prevCustomer,
-      [id]: value
+      profiles: [
+        {
+          ...prevCustomer.profiles[0],
+          [id]: value
+        }
+      ]
     }))
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
+    if (!customer || !customer.profiles || !customer.profiles[0]) {
+      toast.error('Customer data is incomplete.')
+      return
+    }
+
     try {
-      // Validate customer data
       if (!customer.name || !customer.email || !stateId || !localityId) {
         toast.error('Please fill out all required fields.')
         return
       }
 
-      // Update the customer using the service
-      const update = await updateCustomer(id, {
+      const response = await updateCustomer(id, {
         name: customer.name,
         email: customer.email,
-        document_type: customer.document_type,
-        document_number: customer.document_number,
-        phone: customer.phone,
+        document_type: customer.profiles[0].document_type,
+        document_number: customer.profiles[0].document_number,
+        phone: customer.profiles[0].phone,
         state_id: stateId,
         locality_id: localityId
       })
 
-      console.log('Update successful:', update)
-
-      // Notify the user about the success
-      toast.success('Customer updated successfully')
-      // Redirect to the customer list page
-      navigate('/admin/customers')
+      if (response.status === 200) {
+        toast.success('Customer updated successfully')
+        navigate('/admin/customers')
+      } else {
+        toast.error('Error updating customer.')
+      }
     } catch (error) {
       console.error('Error updating customer:', error)
-      // Notify the user about the error
       toast.error('Error updating customer. Please try again later.')
     }
   }
