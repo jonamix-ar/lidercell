@@ -151,7 +151,15 @@ const EditCustomers = () => {
                   id="doc_type"
                   value={customer?.profiles[0]?.document_type || ''}
                   onChange={(e) =>
-                    setCustomer({ ...customer, document_type: e.target.value })
+                    setCustomer({
+                      ...customer,
+                      profiles: [
+                        {
+                          ...customer.profiles[0],
+                          document_type: e.target.value
+                        }
+                      ]
+                    })
                   }
                   className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent px-5 py-3 font-normal text-black outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:text-white dark:focus:border-primary uppercase"
                 >
