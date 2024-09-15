@@ -8,6 +8,7 @@ import { FiSearch } from 'react-icons/fi'
 
 const Ecommerce = () => {
   const [toggleView, setToggleView] = useState(true)
+  const [showWholesale, setShowWholesale] = useState(false)
   const [loading, setLoading] = useState(true)
   const [products, setProducts] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
@@ -91,6 +92,8 @@ const Ecommerce = () => {
               onSearchChange={handleSearchChange}
               onBrandChange={handleBrandChange}
               selectedBrand={brand}
+              setShowWholesale={setShowWholesale}
+              showWholesale={showWholesale}
             />
           </div>
         </div>
@@ -106,7 +109,7 @@ const Ecommerce = () => {
                 onPageChange={handlePageChange}
               />
               <div className="mb-4 mt-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4">
-                <ProductGrid products={products} totalPages={totalPages} />
+                <ProductGrid products={products} totalPages={totalPages} showWholesale={showWholesale}  />
               </div>
               <Pagination
                 currentPage={currentPage}

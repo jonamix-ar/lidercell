@@ -34,3 +34,13 @@ export const formatReceiptType = (type) => {
       return 'Sin tipo'
   }
 }
+
+export const formatStatusMobile = (status) => {
+  const statusMap = {
+    0: 'Nuevo',
+    1: 'Seminuevo',
+    2: 'Reacondicionado'
+  }
+
+  return statusMap[status] || 'Sin estado'
+}
