@@ -60,7 +60,7 @@ const Filters = ({
           </button>
 
           {dropdownBrands && (
-            <div className="z-50 absolute mt-2 w-40 divide-y divide-gray-100 rounded-lg bg-white shadow dark:bg-gray-700">
+            <div className="z-50 absolute mt-10 w-40 divide-y divide-gray-100 rounded-lg bg-white shadow dark:bg-gray-700">
               <ul className="p-2 text-left text-sm font-medium text-gray-500 dark:text-gray-400">
                 <li>
                   <button
@@ -105,7 +105,7 @@ const Filters = ({
           </button>
 
           {dropdownSort && (
-            <div className="z-50 absolute mt-2 w-40 divide-y divide-gray-100 rounded-lg bg-white shadow dark:bg-gray-700">
+            <div className="z-50 absolute mt-10 w-40 divide-y divide-gray-100 rounded-lg bg-white shadow dark:bg-gray-700">
               <ul className="p-2 text-left text-sm font-medium text-gray-500 dark:text-gray-400">
                 {/* Opciones de ordenación */}
                 <li>
@@ -114,6 +114,38 @@ const Filters = ({
                     className="w-full px-3 py-2 text-left hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
                   >
                     Menor Precio
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => onSortChange('priceDesc')}
+                    className="w-full px-3 py-2 text-left hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
+                  >
+                    Mayor Precio
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => onSortChange('nameAsc')}
+                    className="w-full px-3 py-2 text-left hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
+                  >
+                    A-z
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => onSortChange('nameDesc')}
+                    className="w-full px-3 py-2 text-left hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
+                  >
+                    Z-a
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => onSortChange('bestSellers')}
+                    className="w-full px-3 py-2 text-left hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-600 dark:hover:text-white"
+                  >
+                    Mas Vendidos
                   </button>
                 </li>
                 {/* Otras opciones... */}

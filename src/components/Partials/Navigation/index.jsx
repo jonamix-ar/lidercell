@@ -26,6 +26,7 @@ const Navigation = ({ user, sidebarOpen, setSidebarOpen }) => {
               stroke={'#000'}
               className={'w-[165px] h-[35px]'}
               alt="Logo Lidercell"
+              title="Logo Lidercell"
             />
           </Link>
         </div>

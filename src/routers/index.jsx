@@ -5,7 +5,7 @@ import AppLayout from '../components/Layouts/AppLayout'
 
 // Home
 const Home = lazy(() => import('../pages/Home'))
-
+const Product = lazy(() => import('../pages/Product'))
 // Authentication
 const Login = lazy(() => import('../pages/Auth/Login'))
 
@@ -46,6 +46,10 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <Home />
+      },
+      {
+        path: '/producto/:slug',
+        element: <Product />
       },
       {
         path: '/login',

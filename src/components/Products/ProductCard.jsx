@@ -4,7 +4,7 @@ import { money } from '@app/utils/money'
 import { getDolar } from '@app/services/dolar'
 import { formatStatusMobile } from '@app/utils/format'
 
-const ProductCard = ({ product, showWholesale }) => {
+const ProductCard = ({ product, showWholesale, list }) => {
   const [price, setPrice] = useState(0)
   const [priceWholesale, setPriceWholesale] = useState(0)
   const imgSrcPlaceholder = 'https://placehold.co/600x400'
@@ -22,12 +22,18 @@ const ProductCard = ({ product, showWholesale }) => {
     }
 
     fetchData()
-  }, [product, showWholesale]) // Agregamos showWholesale como dependencia
+  }, [product, showWholesale])
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
-      <div className="h-56 w-full">
-        <Link href="#">
+    <div
+      className={`${
+        list
+          ? 'flex items-center space-x-6 p-4 rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800'
+          : 'rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800'
+      }`}
+    >
+      <div className={`${list ? 'w-24 h-24' : 'h-56'} w-full`}>
+        <Link to={`/producto/${product.slug}`}>
           <img
             className="mx-auto h-full dark:block"
             src={
@@ -36,12 +42,15 @@ const ProductCard = ({ product, showWholesale }) => {
                 : imgSrcPlaceholder
             }
             alt={product.name}
+            loading="lazy"
+            width={"100%"}
+            height={"100%"}
           />
         </Link>
       </div>
-      <div className="pt-6 text-center ">
+      <div className={`pt-6 ${list ? 'flex-1' : 'text-center'}`}>
         <Link
-          href="#"
+          to={`/producto/${product.slug}`}
           className="text-lg font-semibold leading-tight text-gray-900 hover:underline dark:text-white"
         >
           {product.name}
@@ -53,9 +62,12 @@ const ProductCard = ({ product, showWholesale }) => {
           </p>
         </div>
 
-        {/* Mostrar precios en función de showWholesale */}
-        {showWholesale ? (
-          <div className="mt-4 flex items-center justify-between gap-4 transition-opacity duration-500 ease-in-out opacity-100">
+        {!showWholesale ? (
+          <div
+            className={`mt-4 flex ${
+              list ? 'justify-between' : 'items-center justify-between gap-4'
+            } transition-opacity duration-500 ease-in-out opacity-100`}
+          >
             <div>
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
                 Precio USD
@@ -76,7 +88,13 @@ const ProductCard = ({ product, showWholesale }) => {
         ) : (
           <>
             {product.show_price_wholesaler == 1 && (
-              <div className="mt-4 flex items-center justify-between gap-4 transition-opacity duration-500 ease-in-out opacity-100">
+              <div
+                className={`mt-4 flex ${
+                  list
+                    ? 'justify-between'
+                    : 'items-center justify-between gap-4'
+                } transition-opacity duration-500 ease-in-out opacity-100`}
+              >
                 <div>
                   <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
                     Precio Mayorista USD
