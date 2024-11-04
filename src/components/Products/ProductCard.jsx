@@ -34,18 +34,20 @@ const ProductCard = ({ product, showWholesale, list }) => {
     >
       <div className={`${list ? 'w-24 h-24' : 'h-56'} w-full`}>
         <Link to={`/producto/${product.slug}`}>
-          <img
-            className="mx-auto h-full dark:block"
-            src={
-              product.picture
-                ? `${imageBrands}${product.picture}`
-                : imgSrcPlaceholder
-            }
-            alt={product.name}
-            loading="lazy"
-            width={'100%'}
-            height={'100%'}
-          />
+          <div className="w-48 h-48 overflow-hidden">
+            {' '}
+            {/* Ajusta el tamaño deseado */}
+            <img
+              className="w-full h-full object-cover mx-auto dark:block"
+              src={
+                product.picture
+                  ? `${imageBrands}${product.picture}`
+                  : imgSrcPlaceholder
+              }
+              alt={product.name}
+              loading="lazy"
+            />
+          </div>
         </Link>
       </div>
       <div className={`pt-6 ${list ? 'flex-1' : 'text-center'}`}>
