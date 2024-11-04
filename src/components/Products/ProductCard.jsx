@@ -32,7 +32,7 @@ const ProductCard = ({ product, showWholesale, list }) => {
           : 'rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800'
       }`}
     >
-      <div className={`${list ? 'w-24 h-24' : 'h-56'} w-full`}>
+      <div className={`${list ? 'w-24 h-24' : 'h-56'} w-full mb-4`}>
         <Link to={`/producto/${product.slug}`}>
           <div className="w-64 h-64 overflow-hidden">
             {' '}
@@ -50,7 +50,7 @@ const ProductCard = ({ product, showWholesale, list }) => {
           </div>
         </Link>
       </div>
-      <div className={`pt-6 ${list ? 'flex-1' : 'text-center'}`}>
+      <div className={`pt-8 ${list ? 'flex-1' : 'text-center'}`}>
         <Link
           to={`/producto/${product.slug}`}
           className="text-lg font-semibold leading-tight text-gray-900 hover:underline dark:text-white"
