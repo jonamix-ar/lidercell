@@ -34,9 +34,11 @@ const ProductCard = ({ product, showWholesale, list }) => {
     >
       <div className={`${list ? 'w-24 h-24' : 'h-56'} w-full`}>
         <Link to={`/producto/${product.slug}`}>
-          <div className="w-48 h-48 overflow-hidden flex items-center justify-center">
+          <div className="w-64 h-64 overflow-hidden">
+            {' '}
+            {/* Ajusta el tamaño según tus necesidades */}
             <img
-              className="w-full h-full object-contain mx-auto dark:block"
+              className="w-full h-full object-cover"
               src={
                 product.picture
                   ? `${imageBrands}${product.picture}`
