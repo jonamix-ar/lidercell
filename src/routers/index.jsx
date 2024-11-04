@@ -34,6 +34,9 @@ const Customers = lazy(() => import('../pages/Admin/Customers'))
 const EditCustomers = lazy(
   () => import('../pages/Admin/Customers/EditCustomers')
 )
+const CreateCustomers = lazy(
+  () => import('../pages/Admin/Customers/Create')
+)
 
 // Error
 const NotFound = lazy(() => import('../pages/Error/NotFound'))
@@ -112,6 +115,10 @@ const router = createBrowserRouter([
       {
         path: 'customers',
         element: <Customers />
+      },
+      {
+        path: 'customers/create',
+        element: <CreateCustomers />
       },
       {
         path: 'customers/:id',
