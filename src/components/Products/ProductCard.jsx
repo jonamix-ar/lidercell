@@ -43,8 +43,8 @@ const ProductCard = ({ product, showWholesale, list }) => {
             }
             alt={product.name}
             loading="lazy"
-            width={"100%"}
-            height={"100%"}
+            width={'100%'}
+            height={'100%'}
           />
         </Link>
       </div>
@@ -60,6 +60,19 @@ const ProductCard = ({ product, showWholesale, list }) => {
           <p className="bg-gray-100 text-gray-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">
             {formatStatusMobile(product.pre_owned)}
           </p>
+        </div>
+
+        <div className="mt-4 flex items-center justify-center gap-4">
+          {product.color && (
+            <span class="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">
+              {product.color}
+            </span>
+          )}
+          {product.storage && (
+            <span class="bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">
+              {product.storage}
+            </span>
+          )}
         </div>
 
         {!showWholesale ? (
