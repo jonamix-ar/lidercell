@@ -10,6 +10,8 @@ import { FaFilePdf } from 'react-icons/fa'
 import { paymentTypes } from '@app/utils/paymentTypes'
 import { money } from '@app/utils/money'
 import { generatePDF } from '@app/utils/generatePDF'
+import moment from 'moment'
+import "moment/locale/es"
 
 const SalesList = () => {
   const [sales, setSales] = useState([])
@@ -73,7 +75,7 @@ const SalesList = () => {
       id: 'date',
       accessorKey: 'date',
       header: 'Fecha',
-      cell: (info) => new Date(info.getValue()).toLocaleDateString()
+      cell: (info) => moment(info.row.original.date).format('DD/MM/YYYY')
     },
     {
       id: 'customer',
