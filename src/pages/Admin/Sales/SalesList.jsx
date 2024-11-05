@@ -75,7 +75,7 @@ const SalesList = () => {
       id: 'date',
       accessorKey: 'date',
       header: 'Fecha',
-      cell: (info) => moment(info.row.original.date).format('DD/MM/YYYY')
+      cell: (info) => info.row.original.date
     },
     {
       id: 'customer',
