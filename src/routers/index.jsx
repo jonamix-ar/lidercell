@@ -34,9 +34,10 @@ const Customers = lazy(() => import('../pages/Admin/Customers'))
 const EditCustomers = lazy(
   () => import('../pages/Admin/Customers/EditCustomers')
 )
-const CreateCustomers = lazy(
-  () => import('../pages/Admin/Customers/Create')
-)
+const CreateCustomers = lazy(() => import('../pages/Admin/Customers/Create'))
+
+const Warranty = lazy(() => import('../pages/Home/Warranty'))
+const Contact = lazy(() => import('../pages/Home/Contact'))
 
 // Error
 const NotFound = lazy(() => import('../pages/Error/NotFound'))
@@ -57,6 +58,14 @@ const router = createBrowserRouter([
       {
         path: '/login',
         element: <Login />
+      },
+      {
+        path: '/warranty',
+        element: <Warranty />
+      },
+      {
+        path: '/contact',
+        element: <Contact />
       }
     ]
   },
