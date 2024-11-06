@@ -76,7 +76,7 @@ const ProductCard = ({ product, showWholesale, list }) => {
 
         <div className="mt-4 flex items-center justify-center gap-4"></div>
 
-        {product.stock > 0 ? (
+        {product.qty > 0 ? (
           <div
             className={`mt-4 flex ${
               list ? 'justify-between' : 'items-center justify-between gap-4'
