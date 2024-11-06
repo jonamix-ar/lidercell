@@ -1,23 +1,26 @@
 import React, { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { getProducts } from '../../services/api'
 import { getDolar } from '../../services/dolar'
 import { money, moneyArs } from '../../utils/money'
 import Seo from '../common/Seo'
+import { Heart, ShoppingCart, Truck, Shield, ArrowLeft } from 'lucide-react'
+import WhatsAppContactButton from '../common/WhatsAppContactButton'
 
 const ProductDetail = () => {
-  const { slug } = useParams() // Obtiene el slug desde la URL
+  const { slug } = useParams()
   const [product, setProduct] = useState(null)
   const [price, setPrice] = useState(0)
   const [priceWholesale, setPriceWholesale] = useState(0)
+  const [loading, setLoading] = useState(true)
   const imgSrcPlaceholder = 'https://placehold.co/600x400'
   const imageBrands = `${import.meta.env.VITE_REACT_APP_BACKEND}`
 
   useEffect(() => {
-    // Simula una llamada a la API para obtener el producto por su slug
     const fetchProductBySlug = async () => {
       try {
-        const response = await getProducts(slug) // Ajusta la ruta de tu API
+        setLoading(true)
+        const response = await getProducts(slug)
         setProduct(response.product)
 
         const dolarValue = await getDolar()
@@ -29,14 +32,32 @@ const ProductDetail = () => {
         setPriceWholesale(priceWholesaleARS)
       } catch (error) {
         console.error('Error al obtener el producto:', error)
+      } finally {
+        setLoading(false)
       }
     }
 
     fetchProductBySlug()
   }, [slug])
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    )
+  }
+
   if (!product) {
-    return <p>Cargando producto...</p>
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <p className="text-2xl font-semibold mb-4">Producto no encontrado</p>
+        <a href="/" className="text-blue-500 hover:underline flex items-center">
+          <ArrowLeft className="mr-2" />
+          Volver a la página principal
+        </a>
+      </div>
+    )
   }
 
   return (
@@ -52,102 +73,105 @@ const ProductDetail = () => {
         }
         url={`${imageBrands + '/' + product.slug}`}
       />
-      <section
-        className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
-        key={product.id}
-      >
-        <div className="max-w-screen-xl px-4 mx-auto 2xl:px-0">
-          <div className="lg:grid lg:grid-cols-2 lg:gap-8 xl:gap-16">
-            <div className="shrink-0 max-w-md lg:max-w-lg mx-auto">
-              <img
-                src={
-                  product.picture
-                    ? `${imageBrands}${product.picture}`
-                    : imgSrcPlaceholder
-                }
-                alt={product.name}
-                loading="lazy"
-                className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-              />
+      <section className="py-12 bg-white dark:bg-gray-900 shadow rounded-lg">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="lg:grid lg:grid-cols-2 lg:gap-x-8 lg:items-start">
+            {/* Image gallery */}
+            <div className="flex flex-col items-center">
+              <div className="overflow-hidden rounded-lg bg-gray-100 mb-4">
+                <img
+                  src={
+                    product.picture
+                      ? `${imageBrands}${product.picture}`
+                      : imgSrcPlaceholder
+                  }
+                  alt={product.name}
+                  className="h-full w-full object-cover object-center"
+                />
+              </div>
+              {/* Add more images here if available */}
             </div>
 
-            <div className="mt-6 sm:mt-8 lg:mt-0">
-              <h1 className="text-xl font-semibold text-gray-900 sm:text-2xl dark:text-white">
+            {/* Product info */}
+            <div className="mt-10 px-4 sm:px-0 sm:mt-16 lg:mt-0">
+              <h1 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
                 {product.name}
               </h1>
-              <div className="mt-4 sm:items-center sm:gap-4 sm:flex">
-                <p className="text-2xl font-extrabold text-gray-900 sm:text-3xl dark:text-white">
-                  Dolares: {`${money(product.price)}`}
-                </p>
 
-                <p className="text-2xl font-extrabold text-gray-900 sm:text-3xl dark:text-white">
-                  Pesos Arg: {`${moneyArs(price)}`}
-                </p>
+              <div className="mt-3">
+                <h2 className="sr-only">Product information</h2>
+                <p className="text-3xl text-gray-900 dark:text-white">{`${money(product.price)} USD`}</p>
+                <p className="mt-1 text-xl text-gray-500 dark:text-gray-400">{`${moneyArs(price)} ARS`}</p>
               </div>
 
-              <div className="mt-6 sm:gap-4 sm:items-center sm:flex sm:mt-8">
-                <a
-                  href="#"
-                  title=""
-                  className="flex items-center justify-center py-2.5 px-5 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-4 focus:ring-gray-100 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
-                  role="button"
-                >
-                  <svg
-                    className="w-5 h-5 -ms-2 me-2"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12.01 6.001C6.5 1 1 8 5.782 13.001L12.011 20l6.23-7C23 8 17.5 1 12.01 6.002Z"
-                    />
-                  </svg>
-                  Add to favorites
-                </a>
+              {product.show_price_wholesaler === 1 && (
+                <div className="mt-3">
+                  <h3 className="text-sm text-gray-600 dark:text-gray-400">
+                    Precio mayorista:
+                  </h3>
+                  <p className="mt-1 text-xl text-gray-900 dark:text-white">{`${money(product.price_wholesaler)} USD`}</p>
+                  <p className="mt-1 text-lg text-gray-500 dark:text-gray-400">{`${moneyArs(priceWholesale)} ARS`}</p>
+                </div>
+              )}
 
-                <a
-                  href="#"
-                  title=""
-                  className="text-white mt-4 sm:mt-0 bg-blue-700 hover:bg-primary-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-primary-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800 flex items-center justify-center"
-                  role="button"
-                >
-                  <svg
-                    className="w-5 h-5 -ms-2 me-2"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M4 4h1.5L8 16m0 0h8m-8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm8 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4Zm.75-3H7.5M11 7H6.312M17 4v6m-3-3h6"
-                    />
-                  </svg>
-                  Comprar
-                </a>
+              <div className="mt-6">
+                <h3 className="sr-only">Description</h3>
+                <div className="text-base text-gray-700 dark:text-gray-300 space-y-6">
+                  {product.description}
+                </div>
               </div>
 
-              <hr className="my-6 md:my-8 border-gray-200 dark:border-gray-800" />
+              {/* <div className="mt-8 flex flex-col space-y-4">
+                <button className="flex-1 bg-blue-600 border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                  <ShoppingCart className="mr-2 h-5 w-5" />
+                  Agregar al carrito
+                </button>
+                <button className="flex-1 bg-gray-200 border border-transparent rounded-md py-3 px-8 flex items-center justify-center text-base font-medium text-gray-900 hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                  <Heart className="mr-2 h-5 w-5" />
+                  Agregar a favoritos
+                </button>
+              </div> */}
 
-              <p className="mb-6 text-gray-500 dark:text-gray-400">
-                {product.description}
-              </p>
+              <div className="mt-10 border-t border-gray-200 pt-10">
+                <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+                  Atributos
+                </h3>
+                <div className="mt-4 prose prose-sm text-gray-500 dark:text-gray-400">
+                  <ul role="list">
+                    <li>Color: {product.color}</li>
+                    <li>Almacenamiento: {product.storage}</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* <div className="mt-8 border-t border-gray-200 pt-8">
+                <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+                Información de envío
+                </h3>
+                <div className="mt-4 flex items-center">
+                  <Truck className="flex-shrink-0 h-5 w-5 text-green-500" />
+                  <p className="ml-2 text-sm text-gray-500 dark:text-gray-400">
+                    Free shipping on orders over $100
+                  </p>
+                </div>
+              </div> */}
+
+              <div className="mt-8 border-t border-gray-200 pt-8">
+                <h3 className="text-sm font-medium text-gray-900 dark:text-white">
+                  Garantía
+                </h3>
+                <div className="mt-4 flex items-center">
+                  <Shield className="flex-shrink-0 h-5 w-5 text-green-500" />
+                  <Link to={'/warranty'} className="ml-2 text-sm text-gray-500 dark:text-gray-400">
+                   Ingresar para ver la garantía
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
+      <WhatsAppContactButton />
     </>
   )
 }
