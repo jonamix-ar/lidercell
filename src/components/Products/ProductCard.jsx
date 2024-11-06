@@ -76,39 +76,14 @@ const ProductCard = ({ product, showWholesale, list }) => {
 
         <div className="mt-4 flex items-center justify-center gap-4"></div>
 
-        {!showWholesale ? (
+        {product.stock > 0 ? (
           <div
             className={`mt-4 flex ${
               list ? 'justify-between' : 'items-center justify-between gap-4'
             } transition-opacity duration-500 ease-in-out opacity-100`}
           >
-            <div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                Precio USD
-              </p>
-              <p className="text-xl font-bold leading-tight text-gray-900 dark:text-white">
-                {money(product.price)}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                Precio ARS
-              </p>
-              <p className="text-xl font-bold leading-tight text-gray-900 dark:text-white">
-                {money(price)}
-              </p>
-            </div>
-          </div>
-        ) : (
-          <>
-            {product.show_price_wholesaler == 1 && (
-              <div
-                className={`mt-4 flex ${
-                  list
-                    ? 'justify-between'
-                    : 'items-center justify-between gap-4'
-                } transition-opacity duration-500 ease-in-out opacity-100`}
-              >
+            {showWholesale && product.show_price_wholesaler === 1 ? (
+              <>
                 <div>
                   <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
                     Precio Mayorista USD
@@ -125,9 +100,34 @@ const ProductCard = ({ product, showWholesale, list }) => {
                     {money(priceWholesale)}
                   </p>
                 </div>
-              </div>
+              </>
+            ) : (
+              <>
+                <div>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Precio USD
+                  </p>
+                  <p className="text-xl font-bold leading-tight text-gray-900 dark:text-white">
+                    {money(product.price)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                    Precio ARS
+                  </p>
+                  <p className="text-xl font-bold leading-tight text-gray-900 dark:text-white">
+                    {money(price)}
+                  </p>
+                </div>
+              </>
             )}
-          </>
+          </div>
+        ) : (
+          <div className="mt-4 flex items-center justify-center gap-4">
+            <p className="bg-red-100 text-red-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-red-700 dark:text-red-300">
+              Agotado
+            </p>
+          </div>
         )}
       </div>
     </div>
