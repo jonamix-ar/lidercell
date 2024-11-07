@@ -29,6 +29,7 @@ const Login = () => {
           {/* Right Box */}
           <div className="w-full md:w-1/2 p-6 md:p-12">
             <div className="flex flex-col items-center">
+              
               <LoginForm />
             </div>
           </div>
