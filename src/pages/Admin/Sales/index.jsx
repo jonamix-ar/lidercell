@@ -25,7 +25,8 @@ import {
 const paymentTypes = [
   { id: 1, name: 'Dolares' },
   { id: 2, name: 'Dolares + Pesos ARS' },
-  { id: 3, name: 'USDT/Crypto' }
+  { id: 3, name: 'USDT/Crypto' },
+  { id: 4, name: 'Pesos ARS' }
 ]
 
 const Sales = () => {
@@ -44,6 +45,7 @@ const Sales = () => {
   const [amountPaid, setAmountPaid] = useState('')
   const [amountInDollars, setAmountInDollars] = useState('')
   const [transactionPercentage, setTransactionPercentage] = useState(0)
+  const [amountInArs, setAmountInArs] = useState(0)
   const [saleDate, setSaleDate] = useState(
     new Date().toISOString().split('T')[0]
   )
@@ -221,6 +223,10 @@ const Sales = () => {
     setAmountInDollars(e.target.value)
   }
 
+  const handleAmountInArsChange = (e) => {
+    setAmountInArs(e.target.value)
+  }
+
   const calculateChange = () => {
     const amount = parseFloat(amountPaid)
     return !isNaN(amount) ? amount - totalCash : 0
@@ -274,7 +280,11 @@ const Sales = () => {
               ? parseFloat(amountInDollars) || 0
               : 0,
         amount_paid_ars:
-          paymentType === 2 ? calculateRemainingAmount() || 0 : 0,
+          paymentType === 2
+            ? calculateRemainingAmount() || 0
+            : paymentType === 4
+              ? parseFloat(amountInArs) || 0
+              : 0,
         amount_percent: transactionPercentage,
         total: calculateTotalFinal() || 0
       }
@@ -671,6 +681,25 @@ const Sales = () => {
                 </div>
               </>
             )}
+
+            {paymentType === 4 && (
+              <div className="col-span-1 mt-2">
+                <label
+                  htmlFor="amount-in-pesos"
+                  className="block mb-2 text-sm font-medium text-gray-900 dark:text-white mb-2 mt-2"
+                >
+                  Monto en Pesos ARS:
+                </label>
+                <input
+                  id="amount-in-ars"
+                  value={amountInArs || ''}
+                  onChange={handleAmountInArsChange}
+                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                  placeholder="Monto restante"
+                />
+              </div>
+            )}
+
             <div>
               <button
                 type="submit"

@@ -105,7 +105,27 @@ const SalesList = () => {
       id: 'total',
       accessorKey: 'total',
       header: 'Total',
-      cell: (info) => `${money(info.row.original.total)}`
+      cell: (info) => {
+        const total = info.row.original.total
+        const paymentType = info.row.original.payment_method
+        const amountDolar = info.row.original.amount_paid_dolar
+        const amountArs = info.row.original.amount_paid_ars
+        const amountPercent = info.row.original.amount_percent
+
+        let extra = ''
+
+        if (paymentType === 1) {
+          extra = ` (USD ${amountDolar})`
+        } else if (paymentType === 2) {
+          extra = ` (USD ${amountDolar} + ARS ${money(amountArs)})`
+        } else if (paymentType === 3) {
+          extra = ` (USD ${amountDolar} + ${amountPercent}%)`
+        } else if (paymentType === 4) {
+          extra = ` (ARS ${money(amountArs)})`
+        }
+
+        return `${money(total)}${extra}`
+      }
     }
   ]
 

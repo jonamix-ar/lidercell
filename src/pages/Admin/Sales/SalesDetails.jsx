@@ -40,7 +40,6 @@ const SalesDetails = ({ saleId }) => {
     // Calcula el porcentaje de transacción
     return (totalCash * transactionPercentage) / 100
   }
-  
 
   return loading ? (
     <Loading />
@@ -194,6 +193,21 @@ const SalesDetails = ({ saleId }) => {
                   </span>
                 </label>
               </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {sale.payment_method == 4 && (
+        <>
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="block text-gray-700 font-bold mb-2">
+                Monto en pesos argentinos entregado:{' '}
+                <span className="font-normal">
+                  {money(sale.amount_paid_ars) || '0.00'}
+                </span>
+              </label>
             </div>
           </div>
         </>
