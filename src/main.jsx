@@ -1,5 +1,13 @@
-import React, { Suspense } from 'react'
+// main.jsx
+import React from 'react'
 import ReactDOM from 'react-dom/client'
+
+// Redirigir automáticamente
+window.location.href = 'https://lidercell.com.ar'
+
+// Si deseas detener aquí el renderizado de React
+// puedes eliminar todo lo siguiente si no es necesario
+
 import { RouterProvider } from 'react-router-dom'
 import router from './routers'
 import './styles/global.css'
@@ -11,10 +19,8 @@ const root = ReactDOM.createRoot(document.getElementById('root'))
 
 root.render(
   <React.StrictMode>
-    <Suspense fallback={<Loading />}>
-      <AuthProvider>
-        <RouterProvider router={router} />
-      </AuthProvider>
-    </Suspense>
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </React.StrictMode>
 )
